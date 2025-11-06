@@ -117,8 +117,8 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav mx-auto d-none d-md-flex gap-2">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'core:inicio' %}">Inicio</a>
                     </li>
@@ -141,7 +141,7 @@
                     </button>
                 </form>
                 
-                <ul class="navbar-nav">
+                <ul class="navbar-nav navbar-nav-utilidades flex-row gap-2">
                     <li class="nav-item">
                         <a class="nav-link position-relative" href="{% url 'pedidos:carrito' %}">
                             <i class="bi bi-cart3"></i> Carrito
@@ -151,7 +151,7 @@
                         </a>
                     </li>
                     {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown d-none d-md-block">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle"></i> {{ user.first_name|default:user.username }}
                             </a>

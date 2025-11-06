@@ -198,3 +198,19 @@ def mis_pedidos(request):
         'pedidos': pedidos,
     }
     return render(request, 'pedidos/mis_pedidos.html', context)
+
+def email_confirmacion(request):
+    pedido = get_object_or_404(Pedido, numero_pedido=1)  # Cambiar por un ID válido para pruebas
+    datos_empresa = DatosEmpresa.get_datos()
+    
+    asunto = f'Confirmación de Pedido #{pedido.numero_pedido}'
+    mensaje = render_to_string('pedidos/email_confirmacion.html', {
+        'pedido': pedido,
+        'datos_empresa': datos_empresa,
+    })
+    
+    context = {
+        'asunto': asunto,
+        'mensaje': mensaje,
+    }
+    return render(request, 'pedidos/email_preview.html', context)

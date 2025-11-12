@@ -36,7 +36,7 @@
         <div class="row g-4">
             {% for categoria in categorias %}
             <div class="col-md-4">
-                <a href="{% url 'productos:por_categoria' categoria.id %}" class="text-decoration-none">
+                <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="text-decoration-none">
                     <div class="card h-100 text-center">
                         {% if categoria.imagen %}
                             <img src="{{ categoria.imagen.url }}" class="card-img-top" alt="{{ categoria.nombre }}">

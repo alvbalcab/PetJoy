@@ -14,11 +14,19 @@
                     <h5 class="mb-0">Filtros</h5>
                 </div>
                 <div class="card-body">
+                    <div
+                        class="{% if not categoria_seleccionada_id and not marca_seleccionada_id %}bg-light border-primary border-3 fw-bold{% endif %}">
+                        <a href="{% url 'productos:catalogo' %}" class="text-decoration-none d-block p-1 ps-2">Todas</a>
+                    </div>
                     <h6>Categorías</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'productos:catalogo' %}" class="text-decoration-none">Todas</a></li>
                         {% for categoria in categorias %}
-                            <li><a href="?categoria={{ categoria.id }}" class="text-decoration-none">{{ categoria.nombre }}</a></li>
+                        <!-- Comprobamos si el ID de la categoría actual coincide con el ID seleccionado de la URL -->
+                        <li class="{% if categoria.id == categoria_seleccionada_id %}bg-light border-start border-primary border-3 fw-bold{% endif %}">
+                                <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="text-decoration-none d-block p-1 ps-2">
+                                    {{ categoria.nombre }}
+                                </a>
+                            </li>
                         {% endfor %}
                     </ul>
                     
@@ -27,7 +35,11 @@
                     <h6>Marcas</h6>
                     <ul class="list-unstyled">
                         {% for marca in marcas %}
-                            <li><a href="?marca={{ marca.id }}" class="text-decoration-none">{{ marca.nombre }}</a></li>
+                            <!-- Comprobamos si el ID de la marca actual coincide con el ID seleccionado de la URL -->
+                            <li class="{% if marca.id == marca_seleccionada_id %}bg-light border-start border-primary border-3 fw-bold{% endif %}">
+                                <a href="{% url 'productos:catalogo' %}?marca={{ marca.id }}" class="text-decoration-none d-block p-1 ps-2">{{ marca.nombre }}
+                                </a>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Pedido PetJoy #{{ pedido.numero_pedido }}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;">
+    <div style="max-width: 600px; margin: 20px auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+        
+        <h2 style="color: #FF6B35; text-align: center;">¡Tu pedido en PetJoy ha sido confirmado!</h2>
+        
+        <p>Hola **{{ pedido.nombre_cliente }}**,</p>
+        
+        <p>Hemos recibido el pago de tu pedido **#{{ pedido.numero_pedido }}**. ¡Está siendo procesado para envío! Aquí tienes un resumen de la compra.</p>
+        
+        <h3 style="border-bottom: 2px solid #4ECDC4; padding-bottom: 5px; color: #333;">Detalle de los Productos</h3>
+        
+        <table width="100%" cellspacing="0" cellpadding="8" style="border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+            <thead>
+                <tr style="background-color: #f8f8f8;">
+                    <th style="border: 1px solid #ddd; text-align: left;">Producto</th>
+                    <th style="border: 1px solid #ddd; text-align: center;">Cant.</th>
+                    <th style="border: 1px solid #ddd; text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pedido.items.all %}
+                <tr>
+                    <td style="border: 1px solid #ddd;">{{ item.nombre_producto }} {% if item.talla %}(T: {{ item.talla }}){% endif %}</td>
+                    <td style="border: 1px solid #ddd; text-align: center;">{{ item.cantidad }}</td>
+                    <td style="border: 1px solid #ddd; text-align: right;">{{ item.total|floatformat:2 }}€</td>
+                </tr>
+                {% endfor %}
+                
+                <tr>
+                    <td colspan="2" style="border: 1px solid #ddd; text-align: right; font-weight: bold;">Subtotal:</td>
+                    <td style="border: 1px solid #ddd; text-align: right;">{{ pedido.subtotal|floatformat:2 }}€</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: 1px solid #ddd; text-align: right; font-weight: bold;">Coste de Envío:</td>
+                    <td style="border: 1px solid #ddd; text-align: right;">{{ pedido.coste_entrega|floatformat:2 }}€</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: 1px solid #ddd; text-align: right; font-weight: bold;">IVA ({{ datos_empresa.iva_porcentaje|floatformat:2 }}%):</td>
+                    <td style="border: 1px solid #ddd; text-align: right;">{{ pedido.impuestos|floatformat:2 }}€</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: 1px solid #ddd; text-align: right; font-weight: bold; background-color: #4ECDC4; color: white;">TOTAL PAGADO:</td>
+                    <td style="border: 1px solid #ddd; text-align: right; font-weight: bold; background-color: #4ECDC4; color: white;">{{ pedido.total|floatformat:2 }}€</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="border-bottom: 2px solid #4ECDC4; padding-bottom: 5px; color: #333;">Datos de Envío</h3>
+        <p style="margin-bottom: 5px;"><strong>Dirección:</strong> {{ pedido.direccion_envio }}, {{ pedido.codigo_postal_envio }} {{ pedido.ciudad_envio }}</p>
+        <p style="margin-bottom: 5px;"><strong>Teléfono:</strong> {{ pedido.telefono_cliente }}</p>
+
+        <p style="text-align: center; margin-top: 30px;">
+            <a href="{% url 'pedidos:seguimiento' %}" style="display: inline-block; padding: 10px 20px; background-color: #FF6B35; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Seguir mi Pedido
+            </a>
+        </p>
+
+        <p style="margin-top: 20px; font-size: small; color: #999; text-align: center;">PetJoy - <a href="{{ datos_empresa.facebook }}" style="color: #4ECDC4;">Facebook</a> | <a href="{{ datos_empresa.instagram }}" style="color: #4ECDC4;">Instagram</a></p>
+    </div>
+</body>
+</html>

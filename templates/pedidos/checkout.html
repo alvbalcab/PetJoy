@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %} 
+
+{% block title %}Checkout - Datos de Envío{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0 p-4">
+                <h1 class="h3 mb-4 text-primary"><i class="bi bi-truck me-2"></i> 1. Datos de Envío y Contacto</h1>
+                
+                {% if not user.is_authenticated %}
+                    <div class="alert alert-warning p-3 mb-4">
+                        <p class="mb-1 fw-bold">Compra Rápida Activa (Sin registro).</p>
+                        <p class="mb-0 small">
+                            <i class="bi bi-person-fill"></i> ¿Ya tienes una cuenta? 
+                            <a href="{% url 'clientes:login' %}?next={{ request.path }}" class="alert-link">Inicia sesión aquí</a> para precargar tus datos.
+                        </p>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'pedidos:checkout' %}" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <h5 class="mt-4 mb-3">Contacto <small class="text-muted">(Teléfono no obligatorio)</small></h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre *</label>
+                            {{ form.nombre }}
+                            {% for error in form.nombre.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.apellidos.id_for_label }}" class="form-label">Apellidos *   </label>
+                            {{ form.apellidos }}
+                            {% for error in form.apellidos.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email *</label>
+                            {{ form.email }}
+                            {% for error in form.email.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono</label>
+                            {{ form.telefono }}
+                            {% for error in form.telefono.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Dirección de Envío <small class="text-danger">(* Obligatorio)</small></h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="{{ form.direccion.id_for_label }}" class="form-label">Dirección *</label>
+                            {{ form.direccion }}
+                            {% for error in form.direccion.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                        <div class="col-md-7">
+                            <label for="{{ form.ciudad.id_for_label }}" class="form-label">Ciudad *</label>
+                            {{ form.ciudad }}
+                            {% for error in form.ciudad.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                        <div class="col-md-5">
+                            <label for="{{ form.codigo_postal.id_for_label }}" class="form-label">Código Postal *</label>
+                            {{ form.codigo_postal }}
+                            {% for error in form.codigo_postal.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
+                        </div>
+                        
+                        {{ form.metodo_pago }} <div class="col-12 mt-4">
+                            
+                            <label for="{{ form.notas.id_for_label }}" class="form-label">Notas para el repartidor (Opcional)</label>
+                            {{ form.notas }}
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-wallet2 me-2"></i> Ir a Pagar con Tarjeta (Stripe)
+                    </button>
+                    
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5 col-lg-5 d-none d-md-block">
+            <div class="card bg-light p-3 sticky-top" style="top: 80px; border-color: var(--secondary-color);">
+                
+                <h5 class="card-title text-center py-2" style="background-color: var(--secondary-color); color: white; border-radius: 5px;">
+                    Resumen del Pedido
+                </h5>
+                
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between bg-light">
+                        Subtotal: <span>{{ carrito.obtener_precio_total|floatformat:2|intcomma }}€</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between bg-light">
+                        Impuestos: <span>{{ carrito.obtener_impuestos|floatformat:2|intcomma }}€</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between bg-light">
+                        Envío: <span>{{ carrito.obtener_coste_envio|floatformat:2|intcomma }}€</span>
+                    </li>
+                </ul>
+                <div class="d-flex justify-content-between px-3 pb-3">
+                    <h4 class="mb-0">Total:</h4> 
+                    <h4 class="text-success mb-0">{{ carrito.obtener_total_final|floatformat:2|intcomma }}€</h4>
+                </div>
+
+                <small class="text-center text-muted mt-2">Los productos y las cantidades se gestionaron en el carrito.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

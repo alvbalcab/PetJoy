@@ -74,7 +74,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <strong>{{ carrito.obtener_precio_total }}€</strong>
+                            <strong>{{ carrito.obtener_precio_total|floatformat:2 }}€</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Envío:</span>
@@ -82,18 +82,18 @@
                                 {% if carrito.obtener_coste_envio == 0 %}
                                     <span class="text-success">GRATIS</span>
                                 {% else %}
-                                    {{ carrito.obtener_coste_envio }}€
+                                    {{ carrito.obtener_coste_envio|floatformat:2 }}€
                                 {% endif %}
                             </strong>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>IVA:</span>
-                            <strong>{{ carrito.obtener_impuestos }}€</strong>
+                            <strong>{{ carrito.obtener_impuestos|floatformat:2 }}€</strong>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
                             <span class="fs-5">Total:</span>
-                            <strong class="fs-4 text-primary">{{ carrito.obtener_total_final }}€</strong>
+                            <strong class="fs-4 text-primary">{{ carrito.obtener_total_final|floatformat:2 }}€</strong>
                         </div>
                         
                         <a href="{% url 'pedidos:checkout' %}" class="btn btn-primary btn-lg w-100 mb-2">

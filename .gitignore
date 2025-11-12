@@ -30,8 +30,8 @@ static/
 Thumbs.db
 
 # Secretos (NO subir a producción)
-settings.py
-.env
+# settings.py
+# .env
 
 # Otros
 *.bak

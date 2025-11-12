@@ -16,7 +16,7 @@ ENV/
 db.sqlite3
 db.sqlite3-journal
 media/
-staticfiles/
+static/
 
 # IDEs
 .vscode/
@@ -30,8 +30,8 @@ staticfiles/
 Thumbs.db
 
 # Secretos (NO subir a producción)
-# settings_local.py
-# .env
+settings.py
+.env
 
 # Otros
 *.bak

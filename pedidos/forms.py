@@ -1,5 +1,6 @@
 from django import forms
 from .models import Pedido
+from django.core.validators import RegexValidator
 
 
 class DatosEnvioForm(forms.Form):
@@ -16,6 +17,7 @@ class DatosEnvioForm(forms.Form):
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'email@ejemplo.com'})
     )
     telefono = forms.CharField(
+        required=False,
         max_length=20,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+34 600 000 000'})
     )
@@ -29,11 +31,13 @@ class DatosEnvioForm(forms.Form):
     )
     codigo_postal = forms.CharField(
         max_length=10,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Código Postal'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Código Postal'}),
+        validators=[RegexValidator(r'^\d{5}$', 'El código postal debe contener 5 dígitos numéricos.')]
     )
     metodo_pago = forms.ChoiceField(
         choices=Pedido.METODO_PAGO_CHOICES,
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input'})
+        initial='tarjeta',
+        widget=forms.HiddenInput()
     )
     notas = forms.CharField(
         required=False,

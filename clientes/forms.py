@@ -24,20 +24,42 @@ class RegistroForm(UserCreationForm):
         max_length=20,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono'})
     )
+    direccion = forms.CharField(
+        required=True,
+        max_length=300,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Dirección de Envío *'})
+    )
+    ciudad = forms.CharField(
+        required=True,
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ciudad *'})
+    )
+    codigo_postal = forms.CharField(
+        required=True,
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Código Postal *'})
+    )
     
     class Meta:
         model = Cliente
-        fields = ['email', 'first_name', 'last_name', 'telefono', 'password1', 'password2']
+        fields = ['email', 'first_name', 'last_name', 'telefono', 'direccion', 'ciudad', 'codigo_postal', 'password1', 'password2']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirmar contraseña'})
-    
+        self.fields['direccion'].widget.attrs.update({'class': 'form-control'})
+        self.fields['ciudad'].widget.attrs.update({'class': 'form-control'})
+        self.fields['codigo_postal'].widget.attrs.update({'class': 'form-control'})
+                                                         
     def save(self, commit=True):
         user = super().save(commit=False)
         user.username = self.cleaned_data['email']  # Usar email como username
         user.email = self.cleaned_data['email']
+        user.telefono = self.cleaned_data['telefono']
+        user.direccion = self.cleaned_data['direccion']
+        user.ciudad = self.cleaned_data['ciudad']
+        user.codigo_postal = self.cleaned_data['codigo_postal']
         if commit:
             user.save()
         return user

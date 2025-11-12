@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PetJoy - Juguetes para Mascotas{% endblock %}</title>
-    
+    {% load static %}
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
@@ -93,6 +94,21 @@
         
         .text-primary {
             color: var(--secondary-color) !important;
+        }
+
+        .navbar {
+        background-color: var(--primary-color) !important;
+        position: fixed; 
+        top: 0; 
+        width: 100%; 
+        z-index: 1030; 
+    }
+    
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 65px; 
         }
         
         /* Efectos divertidos */

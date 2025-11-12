@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pago Cancelado - PetJoy{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-lg border-danger">
+                <div class="card-header bg-danger text-white text-center py-3">
+                    <h1 class="h4 mb-0"><i class="bi bi-x-octagon-fill me-2"></i> Transacción Cancelada</h1>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <p class="lead text-danger">
+                        El proceso de pago ha sido cancelado o no se pudo completar.
+                    </p>
+                    <p>
+                        Tu carrito de compra se ha conservado. Por favor, revisa los datos de tu tarjeta o intenta con otro método de pago si está disponible.
+                    </p>
+                    
+                    <hr>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{% url 'pedidos:checkout' %}" class="btn btn-warning btn-lg">
+                            <i class="bi bi-arrow-clockwise me-2"></i> Volver a Intentar Pago
+                        </a>
+                        
+                        <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-shop me-2"></i> Seguir Comprando
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

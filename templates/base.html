@@ -58,8 +58,15 @@
         
         .product-image {
             height: 250px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 15px 15px 0 0;
+        }
+
+        .detail-product-main-image {
+            height: 350px;
+            object-fit: contain; /*contain para asegurar que la imagen completa sea visible*/
+            border-radius: 15px;
+            width: 100%;
         }
         
         .footer {

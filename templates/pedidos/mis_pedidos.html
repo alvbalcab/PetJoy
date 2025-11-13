@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Mis Pedidos - PetJoy{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Título Principal de la Página -->
+    <h1 class="mb-4 text-dark-color"><i class="bi bi-bag-check-fill text-primary"></i> Mis Pedidos</h1>
+    
+    <div class="row">
+        
+        <!-- Columna Lateral (Sidebar de Navegación de Cuenta) -->
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-lg">
+                <div class="card-body">
+                    <h5 class="card-title mb-3 fw-bold">Mi Cuenta</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark py-2" href="{% url 'clientes:perfil' %}">
+                                <i class="bi bi-person me-2"></i> Mi Perfil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- Enlace activo para la página actual -->
+                            <a class="nav-link active fw-bold text-primary py-2 bg-light rounded-lg" aria-current="page" href="{% url 'pedidos:mis_pedidos' %}">
+                                <i class="bi bi-bag me-2"></i> Mis Pedidos
+                            </a>
+                        </li>
+                        <!-- Más enlaces (Política, Devoluciones, etc.) se añadirían aquí si existieran -->
+                        <li class="nav-item mt-3 pt-3 border-top">
+                            <a class="nav-link text-danger py-2" href="{% url 'clientes:logout' %}">
+                                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Columna Principal (Lista de Pedidos y Seguimiento) -->
+        <div class="col-md-9">
+            
+            {% if pedidos %}
+                <!-- Bucle para recorrer cada pedido -->
+                {% for pedido in pedidos %}
+                    <div class="card shadow-sm mb-4 border-0 rounded-lg">
+                        <div class="card-header bg-light d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3">
+                            <!-- Información del encabezado del pedido -->
+                            <div class="mb-2 mb-sm-0">
+                                <h5 class="mb-0 text-dark-color fw-bold">Pedido #{{ pedido.numero_pedido }}</h5>
+                                <small class="text-muted">Realizado el: {{ pedido.fecha_creacion|date:"d M Y" }}</small>
+                            </div>
+                            
+                            <!-- Contenedor para los dos botones de seguimiento -->
+                            <div class="d-flex gap-2">
+                                <a href="" class="btn btn-sm btn-outline-primary fw-bold">
+                                    <i class="bi bi-geo-alt-fill me-1"></i> Seguir Envío
+                                </a>
+                                <a href="{% url 'pedidos:confirmacion' pedido_id=pedido.numero_pedido %}" class="btn btn-sm btn-outline-success fw-bold">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Ver Detalles
+                                </a>
+                            </div>
+
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <div class="row">
+                                
+                                <!-- Estado y Total -->
+                                <div class="col-lg-3 col-md-4 mb-3 mb-lg-0 border-end">
+                                    <p class="mb-1 small text-uppercase fw-bold text-muted">Estado:</p>
+                                    <!-- Colores dinámicos según el estado -->
+                                    {% if pedido.estado == 'procesando' %}
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">{{ pedido.get_estado_display }}</span>
+                                    {% elif pedido.estado == 'enviado' %}
+                                        <span class="badge bg-info text-dark px-3 py-2 rounded-pill">{{ pedido.get_estado_display }}</span>
+                                    {% elif pedido.estado == 'entregado' %}
+                                        <span class="badge bg-success px-3 py-2 rounded-pill">{{ pedido.get_estado_display }}</span>
+                                    {% elif pedido.estado == 'cancelado' %}
+                                        <span class="badge bg-danger px-3 py-2 rounded-pill">{{ pedido.get_estado_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary px-3 py-2 rounded-pill">{{ pedido.get_estado_display }}</span>
+                                    {% endif %}
+                                    
+                                    <p class="mt-3 mb-1 small text-uppercase fw-bold text-muted">Total:</p>
+                                    <!-- APLICACIÓN DE LOS FILTROS DE FORMA SEGURA -->
+                                    <h4 class="text-primary fw-bold">{{ pedido.total|floatformat:2|intcomma }} €</h4>
+                                </div>
+                                
+                                <!-- Resumen de Artículos (Estilo Carrusel o Fila de Productos) -->
+                                <div class="col-lg-9 col-md-8">
+                                    <p class="mb-2 small text-uppercase fw-bold text-muted">Artículos:</p>
+                                    <div class="d-flex flex-wrap align-items-center gap-3">
+                                        {% for item in pedido.items.all|slice:":3" %} 
+                                            <div class="d-flex align-items-center bg-light p-2 rounded-lg" style="min-width: 150px;">
+                                                <!-- Icono o imagen pequeña (aquí usamos un placeholder simple) -->
+                                                <i class="bi bi-dot me-2 text-primary" style="font-size: 1.5rem;"></i>
+                                                <div class="small">
+                                                    <div class="fw-bold text-truncate" style="max-width: 120px;">{{ item.nombre_producto }}</div>
+                                                    <!-- Se formatea el precio y la cantidad del artículo -->
+                                                    <div class="text-muted">{{ item.cantidad }}x - {{ item.precio_unitario|floatformat:2|intcomma }} €</div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        
+                                        <!-- Contador de Artículos Adicionales -->
+                                        {% if pedido.items.count > 3 %}
+                                            <span class="text-muted small">
+                                                + {{ pedido.items.count|add:"-3" }} artículo(s) más.
+                                            </span>
+                                        {% endif %}
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+            {% else %}
+                <!-- Mensaje si no hay pedidos -->
+                <div class="alert alert-info text-center py-5 border-0 shadow-sm rounded-lg" role="alert">
+                    <i class="bi bi-bag-x-fill text-info" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3 fw-bold">Aún no tienes pedidos.</h4>
+                    <p class="mb-0">¡Es un buen momento para encontrar algo genial para tu mascota!</p>
+                    <a href="{% url 'productos:catalogo' %}" class="btn btn-primary mt-3 px-4">Ir a Comprar</a>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+
+<!-- Estilo para asegurar esquinas redondeadas en badges y un poco de mejor aspecto -->
+<style>
+    .rounded-lg {
+        border-radius: 0.75rem !important;
+    }
+    /* Estilo para el fondo del enlace activo en el sidebar */
+    .nav-link.active {
+        background-color: #eaf1ff !important; /* Un azul claro para destacar */
+    }
+</style>
+
+{% endblock %}

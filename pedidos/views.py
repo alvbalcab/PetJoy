@@ -257,8 +257,8 @@ def confirmacion_pedido(request, pedido_id):
     datos_empresa = DatosEmpresa.get_datos()
     
     # Limpia la referencia al ID para prevenir que la página se recargue y muestre el mismo pedido
-    del request.session['pedido_id_confirmacion']
-
+    request.session.pop('pedido_id_confirmacion', None) 
+    
     context = {
         'pedido': pedido,
         'datos_empresa': datos_empresa,

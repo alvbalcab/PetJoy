@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.utils.text import slugify
 
@@ -7,6 +9,11 @@ class Categoria(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
     descripcion = models.TextField(blank=True)
     imagen = models.ImageField(upload_to='categorias/', blank=True, null=True)
+    icono_clase = models.CharField(
+        max_length=50,
+        default='bi-grid-3x3-gap', 
+        help_text="Clase CSS del icono de Bootstrap (Ej: bi-bone)"
+    )
     
     class Meta:
         verbose_name = 'Categoría'
@@ -68,6 +75,17 @@ class Producto(models.Model):
         if not self.slug:
             self.slug = slugify(self.nombre)
         super().save(*args, **kwargs)
+
+    def get_imagen_url(self):
+        """
+        Retorna la url de la imagen
+        """
+        if self.imagenes.first():
+            return self.imagenes.first().imagen.url
+        nombre_limpio = slugify(self.nombre)
+        nombre_limpio = nombre_limpio.replace('-','_')
+        ruta_generada = f'img/{nombre_limpio}.jpg'
+        return ruta_generada
     
     def precio_actual(self):
         """Retorna el precio actual considerando ofertas"""
@@ -90,7 +108,7 @@ class Producto(models.Model):
 class ImagenProducto(models.Model):
     """Imágenes de productos"""
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='imagenes')
-    imagen = models.ImageField(upload_to='productos/')
+    imagen = models.ImageField(upload_to='productos/') # cuando suba una foot, Django la guarda dentro de productos/
     es_principal = models.BooleanField(default=False)
     
     class Meta:
@@ -106,7 +124,7 @@ class ImagenProducto(models.Model):
             self.es_principal = True
         # Si se marca como principal, desmarcar las demás
         if self.es_principal:
-            ImagenProducto.objects.filter(producto=self.producto, es_principal=True).update(es_principal=False)
+            ImagenProducto.objects.filter(producto=self.producto, es_principal=True).exclude(pk=self.pk).update(es_principal=False)
         super().save(*args, **kwargs)
 
 

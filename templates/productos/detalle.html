@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}{{ producto.nombre }} - PetJoy{% endblock %}
 
 {% block content %}
@@ -7,13 +7,15 @@
     <div class="row">
         <!-- Imagen del Producto -->
         <div class="col-md-6">
-            {% if producto.imagenes.first %}
-                <img src="{{ producto.imagenes.first.imagen.url }}" class="img-fluid rounded" alt="{{ producto.nombre }}">
-            {% else %}
-                <div class="bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 400px;">
-                    <i class="bi bi-image fs-1 text-white"></i>
-                </div>
-            {% endif %}
+            {% with imagen_url=producto.get_imagen_url %}
+                {% if imagen_url %}
+                    <img src="{% static imagen_url %}" class="detail-product-main-image" alt="{{ producto.nombre }}">
+                {% else %}
+                    <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
+                        <i class="bi bi-image fs-1 text-white"></i>
+                    </div>
+                {% endif %}
+            {% endwith %}
             
             <!-- Miniaturas adicionales -->
             {% if producto.imagenes.count > 1 %}
@@ -114,13 +116,15 @@
         {% for producto_rel in productos_relacionados %}
         <div class="col-md-3">
             <div class="card">
-                {% if producto_rel.imagenes.first %}
-                    <img src="{{ producto_rel.imagenes.first.imagen.url }}" class="card-img-top product-image" alt="{{ producto_rel.nombre }}">
-                {% else %}
-                    <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
-                        <i class="bi bi-image fs-1 text-white"></i>
-                    </div>
-                {% endif %}
+                {% with imagen_rel_url=producto_rel.get_imagen_url %}
+                    {% if imagen_rel_url %}
+                        <img src="{% static imagen_rel_url %}" class="card-img-top product-image" alt="{{ producto_rel.nombre }}">                    
+                    {% else %}
+                        <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
+                            <i class="bi bi-image fs-1 text-white"></i>
+                        </div>
+                    {% endif %}
+                {% endwith %}
                 <div class="card-body">
                     <h5 class="card-title">{{ producto_rel.nombre|truncatechars:40 }}</h5>
                     <p class="fw-bold">{{ producto_rel.precio_actual }}€</p>

@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -135,7 +137,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'core:inicio' %}">
-                <i class="bi bi-shop"></i> 🐾 PetJoy
+                <img src="{% static 'img/favicon.png' %}" height="30">
+                <h7>PetJoy</h7>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

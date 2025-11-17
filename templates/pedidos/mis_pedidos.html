@@ -54,7 +54,7 @@
                             
                             <!-- Contenedor para los dos botones de seguimiento -->
                             <div class="d-flex gap-2">
-                                <a href="" class="btn btn-sm btn-outline-primary fw-bold">
+                                <a href="{% url 'pedidos:seguimiento' %}" class="btn btn-sm btn-outline-primary fw-bold">
                                     <i class="bi bi-geo-alt-fill me-1"></i> Seguir Envío
                                 </a>
                                 <a href="{% url 'pedidos:confirmacion' pedido_id=pedido.numero_pedido %}" class="btn btn-sm btn-outline-success fw-bold">

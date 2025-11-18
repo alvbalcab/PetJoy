@@ -99,11 +99,22 @@ def checkout(request):
     if request.method == 'POST':
         form = DatosEnvioForm(request.POST)
         if form.is_valid():
-            # Requisito 2: Guardar datos de envío en la sesión (para compra anónima/rápida)
+            # PASO CLAVE: Guardar datos de envío en la sesión una vez validados
             request.session['datos_envio_checkout'] = form.cleaned_data
             
-            # Redirigir a la vista que genera la sesión de Stripe (AJAX endpoint)
+            # Determinar el método de pago (Stripe o Contrareembolso)
+            # El campo 'metodo_pago_final' viene del botón pulsado en checkout.html
+            metodo_pago_final = request.POST.get('metodo_pago_final') 
+            
+            if metodo_pago_final == 'contrareembolso':
+                # Si se elige contrareembolso, redirigir a la vista de Contrareembolso
+                # No necesitamos el decorador @transaction.atomic si ya lo tienes en 'pago_contrareembolso'
+                return redirect('pedidos:pago_contrareembolso') 
+            
+            # Por defecto (o si es 'tarjeta'), redirigir a la sesión de Stripe
             return redirect('pedidos:crear_sesion_stripe')
+        
+        # Si el formulario NO es válido, el código continúa hacia render y muestra errores
     else:
         form = DatosEnvioForm(initial=datos_iniciales) # Muestra el formulario precargado
 
@@ -113,6 +124,89 @@ def checkout(request):
     }
     return render(request, 'pedidos/checkout.html', context)
 
+
+@transaction.atomic
+def pago_contrareembolso(request):
+    """
+    Procesa la solicitud de pago contrareembolso, crea el pedido final en DB, 
+    envía el email y limpia la sesión
+    """ 
+
+    # 1. Asegura que tenemos los datos en la sesión y el carrito no está vacío
+    datos_envio = request.session.get('datos_envio_checkout')
+    carrito = Carrito(request)
+ 
+    # Si falta la sesión o el carrito está vacío, se retorna al checkout.
+    if not datos_envio or len(carrito) == 0:
+        messages.error(request, "Faltan datos de envío o el carrito está vacío")
+        return redirect('pedidos:checkout')
+    
+    try:
+        # Totales del carrito antes de limpiarlo
+        subtotal = carrito.obtener_precio_total()
+        envio = carrito.obtener_coste_envio()
+        impuestos = carrito.obtener_impuestos()
+        total = carrito.obtener_total_final()
+        datos_empresa = DatosEmpresa.get_datos()
+
+        # Crear el Objeto Pedido (Registro definitivo)
+        # Requisito: Método de pago Contrareembolso y estado 'pendiente'
+        pedido = Pedido.objects.create(
+            cliente=request.user if request.user.is_authenticated else None,
+            nombre_cliente=datos_envio['nombre'],
+            apellidos_cliente=datos_envio['apellidos'],
+            email_cliente=datos_envio['email'],
+            telefono_cliente=datos_envio['telefono'],
+            direccion_envio=datos_envio['direccion'],
+            ciudad_envio=datos_envio['ciudad'],
+            codigo_postal_envio=datos_envio['codigo_postal'],
+            subtotal=subtotal,
+            coste_entrega=envio,
+            total=total,
+            metodo_pago='contrareembolso', 
+            estado='pendiente', # Estado inicial para contrareembolso
+            notas=datos_envio.get('notas', '') or "Pago Contrareembolso. Pendiente de recepción.", # Uso get('notas', '') para seguridad
+        )
+        # Crear los Items del Pedido y Actualizar Stock (¡Importante la transacción!)
+        for item in carrito:
+            ItemPedido.objects.create(
+                pedido=pedido,
+                producto=item['producto'],
+                nombre_producto=item['producto'].nombre,
+                talla=item.get('talla', ''),
+                cantidad=item['cantidad'],
+                precio_unitario=item['precio'],
+                total=item['total'],
+        )
+            # Actualización de stock
+            producto = item['producto']
+            producto.stock -= item['cantidad']
+            producto.save()
+
+        # Enviar Email de Confirmación
+        asunto = f'🎉 Confirmación de Pedido PetJoy #{pedido.numero_pedido} (Contrareembolso)'
+        html_content = render_to_string('pedidos/email_confirmacion.html', {
+            'pedido': pedido,
+            'datos_empresa': datos_empresa,
+        })
+        # Se asume que deseas enviar el email de confirmación incluso con contrareembolso
+        send_mail(asunto, '', settings.DEFAULT_FROM_EMAIL, [pedido.email_cliente], html_message=html_content, fail_silently=True)
+
+        # Limpiar Carrito y Datos de Sesión
+        request.session['pedido_id_confirmacion'] = pedido.id 
+        del request.session['datos_envio_checkout']
+        carrito.limpiar()
+
+        messages.success(request, f'¡Pedido Contrareembolso realizado! Número: {pedido.numero_pedido}')
+
+        # Redirigir a la página de confirmación final
+        return redirect('pedidos:confirmacion', pedido_id=pedido.numero_pedido)
+
+    except Exception as e:
+        # Si hay un error, el decorador @transaction.atomic asegura un rollback
+        messages.error(request, f"Error al crear el pedido contrareembolso: {e}")
+        return redirect('pedidos:checkout')
+    
 def crear_sesion_stripe(request):
     """Crea la sesión de checkout en Stripe y devuelve la URL para redirigir."""
     carrito = Carrito(request)

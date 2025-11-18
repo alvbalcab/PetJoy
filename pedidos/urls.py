@@ -15,4 +15,5 @@ urlpatterns = [
     path('confirmacion/<str:pedido_id>/', views.confirmacion_pedido, name='confirmacion'),
     path('seguimiento/', views.seguimiento_pedido, name='seguimiento'),
     path('mis-pedidos/', views.mis_pedidos, name='mis_pedidos'),
+    path('pago_contrareembolso/', views.pago_contrareembolso, name='pago_contrareembolso')
 ]

@@ -21,7 +21,7 @@
                     </div>
                 {% endif %}
 
-                <form method="post" action="{% url 'pedidos:checkout' %}" novalidate>
+                <form id="datosEnvioForm" method="post" action="{% url 'pedidos:checkout' %}" novalidate>
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
@@ -36,7 +36,7 @@
                             {% for error in form.nombre.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ form.apellidos.id_for_label }}" class="form-label">Apellidos *   </label>
+                            <label for="{{ form.apellidos.id_for_label }}" class="form-label">Apellidos *</label>
                             {{ form.apellidos }}
                             {% for error in form.apellidos.errors %} <small class="text-danger d-block">{{ error }}</small> {% endfor %}
                         </div>
@@ -79,11 +79,15 @@
                     
                     <hr class="my-4">
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
                         <i class="bi bi-wallet2 me-2"></i> Ir a Pagar con Tarjeta (Stripe)
                     </button>
-                    
                 </form>
+                
+                <button type="button" class="btn btn-secondary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#confirmacionContrareembolsoModal">
+                    <i class="bi bi-cash-coin me-2"></i> Pagar Contrareembolso
+                </button>
+
             </div>
         </div>
 
@@ -115,4 +119,58 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="confirmacionContrareembolsoModal" tabindex="-1" aria-labelledby="confirmacionContrareembolsoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="confirmacionContrareembolsoModalLabel"><i class="bi bi-cash-coin me-2"></i> Confirmar Contrareembolso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea realizar su pedido con el método de **pago contrareembolso**?</p>
+                <p class="mb-0">Se le cobrará un total de <strong>{{ carrito.obtener_total_final|floatformat:2|intcomma }}€</strong> al recibir su pedido.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnAceptarContrareembolso">Aceptar y Finalizar Pedido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('btnAceptarContrareembolso').addEventListener('click', function(e) {
+        // Evitar el envío por defecto si se requiere
+        e.preventDefault(); 
+        
+        const formDatosEnvio = document.getElementById('datosEnvioForm');
+        
+        // 1. Cierra el modal
+        const modalElement = document.getElementById('confirmacionContrareembolsoModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        }
+
+        // 2. Localiza el campo oculto 'metodo_pago_final' (el que usa en la vista checkout)
+        // **Usaremos 'metodo_pago_final' como lo está definido en la vista checkout.**
+        let hiddenInput = formDatosEnvio.querySelector('input[name="metodo_pago_final"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'metodo_pago_final';
+            formDatosEnvio.appendChild(hiddenInput);
+        }
+        
+        // 3. Establece el valor a 'contrareembolso'
+        hiddenInput.value = 'contrareembolso'; 
+        
+        // 4. Envía el formulario a la URL original del action, que es 'pedidos:checkout'
+        formDatosEnvio.submit();
+    });
+</script>
 {% endblock %}

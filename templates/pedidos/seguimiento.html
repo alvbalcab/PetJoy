@@ -1,64 +1,127 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Seguimiento de
-Pedido{% endblock %} {% block content %}
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Seguimiento de Pedido - PetJoy{% endblock %}
+
+{% block content %}
 <div class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow p-4">
-        <h2 class="mb-4 text-center">Seguimiento de Pedido</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            
+            <h1 class="mb-4 text-center text-primary"><i class="bi bi-geo-alt-fill me-2"></i> Estado del Pedido</h1>
 
-        <form method="post">
-          {% csrf_token %}
+            {% if not pedido %}
+            <div class="card shadow p-4 mb-4">
+                <h2 class="h5 mb-4 text-center">Busca tu pedido</h2>
 
-          <div class="mb-3">
-            <label class="form-label">Número de pedido</label>
-            <input
-              type="text"
-              name="numero_pedido"
-              class="form-control"
-              required
-            />
-          </div>
+                {% if user.is_authenticated %}
+                <div class="alert alert-info py-2">
+                    <i class="bi bi-info-circle-fill me-2"></i> Introduce el número de pedido para rastrearlo. Tu correo ya está precargado.
+                </div>
+                {% else %}
+                <p class="text-muted small text-center">Introduce el número de pedido y el correo que usaste en la compra rápida.</p>
+                {% endif %}
 
-          <div class="mb-3">
-            <label class="form-label">Email asociado</label>
-            <input type="email" name="email" class="form-control" required />
-          </div>
+                <form method="post">
+                    {% csrf_token %}
 
-          <button class="btn btn-primary w-100" type="submit">
-            Buscar Pedido
-          </button>
-        </form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Número de pedido</label>
+                        <input
+                            type="text"
+                            name="numero_pedido"
+                            class="form-control"
+                            required
+                            placeholder="Ej: B64E2B2CE53"
+                            value="{{ numero_pedido_precargado|default:'' }}"
+                        />
+                    </div>
 
-        {% if messages %}
-        <div class="mt-3">
-          {% for message in messages %}
-          <div class="alert alert-danger">{{ message }}</div>
-          {% endfor %}
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Email asociado</label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            class="form-control" 
+                            required 
+                            placeholder="tucorreo@ejemplo.com"
+                            value="{% if user.is_authenticated %}{{ user.email }}{% else %}{{ request.POST.email|default:'' }}{% endif %}" 
+                            {% if user.is_authenticated %}readonly{% endif %}
+                        />
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="submit">
+                        <i class="bi bi-search me-2"></i> Buscar Pedido
+                    </button>
+                </form>
+
+                {% if messages %}
+                <div class="mt-3">
+                    {% for message in messages %}
+                    {% if message.tags == 'error' or message.tags == 'warning' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if user.is_authenticated %}
+            <p class="text-center small mt-3">
+                ¿No recuerdas el número? <a href="{% url 'pedidos:mis_pedidos' %}">Ver mi Historial de Pedidos</a>
+            </p>
+            {% endif %}
+
+            {% else %}
+            <div class="card shadow mt-4 p-4 border-success">
+                <h3 class="mb-3 fw-bold text-dark">Pedido #{{ pedido.numero_pedido }}</h3>
+
+                <div class="mb-4">
+                    <p class="mb-1 small text-uppercase fw-bold text-muted">Estado Actual:</p>
+                    {% if pedido.estado == 'procesando' %}
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6">{{ pedido.get_estado_display }}</span>
+                        <p class="small text-muted mt-2">Estamos preparando tu paquete para el envío.</p>
+                    {% elif pedido.estado == 'enviado' %}
+                        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fs-6">{{ pedido.get_estado_display }}</span>
+                        <p class="small text-muted mt-2">Tu pedido está en camino. Revisa el correo para el número de rastreo.</p>
+                    {% elif pedido.estado == 'entregado' %}
+                        <span class="badge bg-success px-3 py-2 rounded-pill fs-6">{{ pedido.get_estado_display }}</span>
+                        <p class="small text-muted mt-2">¡Disfruta! Tu pedido ha sido entregado.</p>
+                    {% else %}
+                        <span class="badge bg-secondary px-3 py-2 rounded-pill fs-6">{{ pedido.get_estado_display }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="row border-top pt-3">
+                    <div class="col-sm-6 mb-3">
+                        <p class="small text-uppercase fw-bold text-muted mb-1">Fecha:</p>
+                        <p class="fw-bold">{{ pedido.fecha_creacion|date:"d M Y, H:i" }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <p class="small text-uppercase fw-bold text-muted mb-1">Total:</p>
+                        <p class="fw-bold text-primary">{{ pedido.total|floatformat:2|intcomma }}€</p>
+                    </div>
+                </div>
+                
+                <hr />
+
+                <h5>Artículos Comprados:</h5>
+                <ul class="list-group list-group-flush mb-4">
+                    {% for item in pedido.items.all %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        {{ item.nombre_producto }} x{{ item.cantidad }}
+                        <span>{{ item.total|floatformat:2|intcomma }}€</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <a href="{% url 'pedidos:confirmacion' pedido_id=pedido.numero_pedido %}" class="btn btn-outline-primary w-100">
+                    Ver Recibo Completo y Detalles de Envío
+                </a>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-      </div>
-
-      {% if pedido %}
-      <div class="card shadow mt-4 p-4">
-        <h3 class="mb-3">Pedido #{{ pedido.numero_pedido }}</h3>
-
-        <p><strong>Estado:</strong> {{ pedido.estado }}</p>
-        <p><strong>Total:</strong> {{ pedido.total }}€</p>
-        <p><strong>Fecha:</strong> {{ pedido.fecha_creacion }}</p>
-        <hr />
-
-        <h5>Artículos:</h5>
-        <ul class="list-group">
-          {% for item in pedido.items.all %}
-          <li class="list-group-item d-flex justify-content-between">
-            {{ item.nombre_producto }} x{{ item.cantidad }}
-            <span>{{ item.total }}€</span>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
     </div>
-  </div>
 </div>
 {% endblock %}

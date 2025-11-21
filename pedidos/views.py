@@ -359,25 +359,44 @@ def confirmacion_pedido(request, pedido_id):
     }
     return render(request, 'pedidos/confirmacion.html', context)
 
-
+@login_required
 def seguimiento_pedido(request):
-    """Seguimiento de pedido por número"""
+    """
+    Maneja el seguimiento de un pedido, permitiendo la búsqueda automática 
+    o la búsqueda manual.
+    """
     pedido = None
     
     if request.method == 'POST':
         numero_pedido = request.POST.get('numero_pedido')
         email = request.POST.get('email')
         
+        if not email and request.user.is_authenticated:
+            email = request.user.email
+
         try:
             pedido = Pedido.objects.get(numero_pedido=numero_pedido, email_cliente=email)
+            messages.success(request, f"Detalles del Pedido #{numero_pedido} encontrados.")
+            
         except Pedido.DoesNotExist:
-            messages.error(request, 'No se encontró el pedido con esos datos')
+            messages.error(request, 'No se encontró el pedido con esos datos. Inténtalo de nuevo.')
     
+    else:
+        numero_pedido_get = request.GET.get('numero_pedido')
+        
+        if request.user.is_authenticated and numero_pedido_get:
+            try:
+                pedido = Pedido.objects.get(numero_pedido=numero_pedido_get, cliente=request.user)
+                messages.info(request, f"Mostrando seguimiento del Pedido #{numero_pedido_get}.")
+                
+            except Pedido.DoesNotExist:
+                messages.error(request, 'No se encontró un pedido asociado a tu cuenta con ese número.')
+
     context = {
         'pedido': pedido,
+        'numero_pedido_precargado': request.GET.get('numero_pedido', '') 
     }
     return render(request, 'pedidos/seguimiento.html', context)
-
 
 @login_required
 def mis_pedidos(request):

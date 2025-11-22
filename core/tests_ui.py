@@ -2,13 +2,16 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from productos.models import Producto, Categoria, Marca
 from core.models import DatosEmpresa
 from django.contrib.auth import get_user_model
 import time
+from productos.models import Producto, Categoria, Marca
+from core.models import DatosEmpresa
+from pedidos.models import Pedido
 
 User = get_user_model()
 
@@ -33,6 +36,11 @@ class PetJoyFullSystemTest(StaticLiveServerTestCase):
             envio_gratuito_desde=50.00, coste_envio_estandar=5.00
         )
 
+        # Usuario ADMIN (Staff) - NECESARIO PARA TESTS DE ADMIN
+        self.user_admin = User.objects.create_user(
+            username="admin@test.com", email="admin@test.com", password="adminpassword", is_staff=True
+        )
+
         self.password = "TestPass123"
         self.user = User(
             username="cliente@test.com", email="cliente@test.com", 
@@ -54,6 +62,26 @@ class PetJoyFullSystemTest(StaticLiveServerTestCase):
             self.browser.quit()
         except:
             pass
+
+    # --- MÉTODO AUXILIAR (HELPER) ---
+    def login_como(self, email, password):
+        """Helper para loguear rápidamente a cualquier usuario."""
+        self.browser.get(f"{self.live_server_url}/cuenta/login/")
+        
+        email_input = self.wait.until(EC.visibility_of_element_located((By.NAME, 'email')))
+        email_input.clear()
+        email_input.send_keys(email)
+        
+        self.browser.find_element(By.NAME, 'password').clear()
+        self.browser.find_element(By.NAME, 'password').send_keys(password)
+        
+        try:
+            self.click_seguro(By.XPATH, "//button[contains(., 'Entrar') or contains(., 'Iniciar')]")
+        except:
+             btn = self.browser.find_element(By.CSS_SELECTOR, "button[type='submit']")
+             self.browser.execute_script("arguments[0].click();", btn)
+        
+        time.sleep(1)
 
     # --- MÉTODO AUXILIAR PARA CLICS SEGUROS ---
     def click_seguro(self, selector_tipo, selector_valor):
@@ -298,7 +326,7 @@ class PetJoyFullSystemTest(StaticLiveServerTestCase):
         else:
              print(f"ℹ️ URL Final: {self.browser.current_url}")
 
-    # --- TEST 7: PÁGINAS ESTÁTICAS Y CONTACTO (CORREGIDO) ---
+    # --- TEST 7: PÁGINAS ESTÁTICAS Y CONTACTO ---
     def test_7_navegacion_core(self):
         print("\n--- TEST 7: Navegación y Contacto ---")
         
@@ -343,7 +371,7 @@ class PetJoyFullSystemTest(StaticLiveServerTestCase):
         else:
              self.fail("❌ El test pulsó el buscador en lugar de Enviar mensaje.")
 
-    # --- TEST 8: PERFIL Y ERRORES (CORREGIDO) ---
+    # --- TEST 8: PERFIL Y ERRORES ---
     def test_8_perfil_y_errores(self):
         print("\n--- TEST 8: Perfil y Manejo de Errores ---")
         
@@ -442,3 +470,113 @@ class PetJoyFullSystemTest(StaticLiveServerTestCase):
 
         except Exception as e:
              print(f"ℹ️ Salto en test de seguimiento: {e}")
+
+    # --- TEST 9: SEGURIDAD (ACCESO DENEGADO) ---
+    def test_seguridad_acceso_denegado(self):
+        print("\n--- TEST ADMIN 9: Seguridad ---")
+        
+        # 1. Intentar entrar como anónimo
+        self.browser.get(f"{self.live_server_url}/panel/")
+        # Debería redirigir al login
+        self.assertIn("login", self.browser.current_url)
+        print("✅ Anónimo redirigido correctamente")
+
+        # 2. Entrar como usuario normal (NO staff)
+        self.login_como("cliente@test.com", "password123")
+        
+        # Intentar ir al panel
+        self.browser.get(f"{self.live_server_url}/panel/")
+        
+        # Django redirige al login de nuevo si no tienes permiso staff
+        # O muestra el login con un mensaje de "no tienes permiso"
+        if "login" in self.browser.current_url:
+            print("✅ Usuario normal bloqueado correctamente")
+        else:
+            # Si entra al dashboard, el test falla
+            body_text = self.browser.find_element(By.TAG_NAME, "body").text
+            self.assertNotIn("Tablero de Control", body_text)
+
+    # --- TEST 10: GESTIÓN DE PRODUCTOS (CREAR) ---
+    def test_crear_producto_admin(self):
+        print("\n--- TEST ADMIN 10: Crear Producto ---")
+        
+        # Login como Admin
+        self.login_como("admin@test.com", "adminpassword")
+        
+        # Ir a Nuevo Producto
+        self.browser.get(f"{self.live_server_url}/panel/productos/nuevo/")
+        
+        # Rellenar Formulario
+        self.wait.until(EC.visibility_of_element_located((By.NAME, 'nombre'))).send_keys("Producto Admin Test")
+        
+        # Selects (Categoría y Marca)
+        select_cat = Select(self.browser.find_element(By.NAME, 'categoria'))
+        select_cat.select_by_index(1) # Selecciona el primero disponible
+        
+        select_marca = Select(self.browser.find_element(By.NAME, 'marca'))
+        select_marca.select_by_index(1)
+        
+        self.browser.find_element(By.NAME, 'descripcion').send_keys("Creado por Selenium Admin")
+        self.browser.find_element(By.NAME, 'precio').send_keys("99.99")
+        self.browser.find_element(By.NAME, 'stock').send_keys("100")
+        
+        # Guardar
+        self.browser.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        
+        # Verificar que volvemos a la lista y el producto existe
+        self.wait.until(EC.url_contains("/panel/productos/"))
+        body_text = self.browser.find_element(By.TAG_NAME, "body").text
+        self.assertIn("Producto Admin Test", body_text)
+        print("✅ Producto creado desde el panel")
+
+    # --- TEST 11: GESTIÓN DE PEDIDOS ---
+    def test_gestion_pedido_admin(self):
+        print("\n--- TEST ADMIN 11: Gestión de Pedido ---")
+        
+        # 1. Crear un pedido fresco para este test
+        pedido_test = Pedido.objects.create(
+            nombre_cliente="Cliente Test Admin",
+            email_cliente="admin_test_client@petjoy.com",
+            total=99.99,
+            subtotal=80.00,
+            estado='pendiente',
+            metodo_pago='tarjeta'
+        )
+        
+        # 2. Login como Admin
+        self.login_como("admin@test.com", "adminpassword")
+        
+        # 3. Ir a la lista de pedidos
+        self.browser.get(f"{self.live_server_url}/panel/pedidos/")
+        
+        # 4. Buscar el botón "Gestionar" específico de este pedido
+        try:
+            boton_gestionar = self.wait.until(EC.element_to_be_clickable(
+                (By.XPATH, f"//tr[contains(., '{pedido_test.email_cliente}')]//a[contains(., 'Gestionar')]")
+            ))
+        except:
+            # Fallback general si el XPATH complejo falla
+            boton_gestionar = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".btn-dark")))
+            
+        self.browser.execute_script("arguments[0].scrollIntoView();", boton_gestionar)
+        time.sleep(0.5)
+        boton_gestionar.click()
+        
+        # 5. Cambiar estado a "Enviado"
+        select_estado = Select(self.wait.until(EC.visibility_of_element_located((By.NAME, 'estado'))))
+        select_estado.select_by_value('enviado')
+        
+        # 6. Guardar
+        boton_guardar = self.browser.find_element(By.CSS_SELECTOR, "button.btn-warning")
+        self.browser.execute_script("arguments[0].scrollIntoView();", boton_guardar)
+        time.sleep(0.5)
+        boton_guardar.click()
+        
+        # 7. Verificar éxito
+        time.sleep(1)
+        self.browser.get(f"{self.live_server_url}/panel/pedidos/")
+        
+        # Verificar que en la fila del cliente ahora dice "Enviado"
+        fila_pedido = self.browser.find_element(By.XPATH, f"//tr[contains(., '{pedido_test.email_cliente}')]").text
+        self.assertIn("Enviado", fila_pedido)
+        print("✅ Estado del pedido actualizado correctamente")

@@ -359,7 +359,6 @@ def confirmacion_pedido(request, pedido_id):
     }
     return render(request, 'pedidos/confirmacion.html', context)
 
-@login_required
 def seguimiento_pedido(request):
     """
     Maneja el seguimiento de un pedido, permitiendo la búsqueda automática 

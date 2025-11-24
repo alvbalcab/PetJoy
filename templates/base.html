@@ -176,6 +176,11 @@
                             {% endif %}
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pedidos:seguimiento' %}">
+                            <i class="bi bi-truck"></i> Seguimiento
+                        </a>
+                    </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown d-none d-md-block">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

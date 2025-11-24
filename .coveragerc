@@ -1,0 +1,32 @@
+[run]
+source = .
+omit =
+    # --- Entorno y Gestión ---
+    */venv/*
+    */env/*
+    manage.py
+    *__init__.py
+    
+    # --- Configuración de Django (Lo que querías quitar) ---
+    */settings.py
+    */urls.py
+    */wsgi.py
+    */asgi.py
+    
+    # --- Migraciones (Autogenerado) ---
+    */migrations/*
+    
+    # --- Tests (Ignorar tanto carpetas como archivos sueltos) ---
+    */tests/*
+    */tests.py
+    */tests_*.py
+    */test_*.py
+    
+    # --- Scripts de utilidad ---
+    personalizar_petjoy.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __str__
+    if settings.DEBUG

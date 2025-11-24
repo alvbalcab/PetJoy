@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'pedidos',
     'clientes',
     'core',
+    'custom_admin',
 ]
 
 MIDDLEWARE = [

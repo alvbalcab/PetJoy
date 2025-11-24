@@ -1,0 +1,90 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Pedido #{{ pedido.numero_pedido }}</h2>
+    <a href="{% url 'custom_admin:lista_pedidos' %}" class="btn btn-outline-secondary">Volver a la lista</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Artículos</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cant.</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pedido.items.all %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.nombre_producto }}</strong>
+                                {% if item.talla %}<br><small class="text-muted">Talla: {{ item.talla }}</small>{% endif %}
+                            </td>
+                            <td>{{ item.precio_unitario }}€</td>
+                            <td>x {{ item.cantidad }}</td>
+                            <td>{{ item.total }}€</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end">Subtotal:</td>
+                            <td><strong>{{ pedido.subtotal }}€</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end">Envío:</td>
+                            <td>{{ pedido.coste_entrega }}€</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end text-primary fs-5"><strong>Total:</strong></td>
+                            <td class="text-primary fs-5"><strong>{{ pedido.total }}€</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">⚙️ Acciones</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <label class="form-label fw-bold">Cambiar Estado del Pedido:</label>
+                    <div class="d-flex gap-2">
+                        {{ form.estado }}
+                        <button type="submit" class="btn btn-warning">Actualizar</button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Al cambiar el estado, el cliente verá la actualización en su seguimiento.</small>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">📍 Dirección de Envío</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>{{ pedido.nombre_cliente }} {{ pedido.apellidos_cliente }}</strong></p>
+                <p class="mb-1">{{ pedido.direccion_envio }}</p>
+                <p class="mb-1">{{ pedido.codigo_postal_envio }}, {{ pedido.ciudad_envio }}</p>
+                <hr>
+                <p class="mb-1"><i class="bi bi-envelope"></i> {{ pedido.email_cliente }}</p>
+                <p class="mb-0"><i class="bi bi-telephone"></i> {{ pedido.telefono_cliente }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

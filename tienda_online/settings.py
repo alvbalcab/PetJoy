@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-68ydtoz277!g2znfvv!dk0!3rv87wa!6)o_om_t!ur*c_g09fi'
+SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-68ydtoz277!g2znfvv!dk0!3rv87wa!6)o_om_t!ur*c_g09fi')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ # Se establecerá en False automáticamente en Render
 
 ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,10 +86,12 @@ WSGI_APPLICATION = 'tienda_online.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Cambia el default a una base de datos SQLite.
+        # Esto solo se usará si la variable de entorno DATABASE_URL NO está presente.
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}', 
+        conn_max_age=600
+    )
 }
 
 
@@ -121,9 +129,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static'] # Directorio de archivos estáticos de desarrollo
+
+# Directorio donde 'collectstatic' reunirá todos los archivos.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Configuración de WhiteNoise (solo para producción cuando DEBUG=False)
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = 'media/'

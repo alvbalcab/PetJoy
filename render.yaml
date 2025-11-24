@@ -10,7 +10,7 @@ services:
     name: tiendaonline
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn tiendaonline.asgi:application -k uvicorn.workers.UvicornWorker' # ¡Reemplaza 'mysite' si tu proyecto se llama diferente!
+    startCommand: 'python -m gunicorn tienda_online.asgi:application -k uvicorn.workers.UvicornWorker'      
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -19,4 +19,5 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: WEB_CONCURRENCY
-        value: 4
+        value: 
+      - key: STRIPE_SECRET_KEY

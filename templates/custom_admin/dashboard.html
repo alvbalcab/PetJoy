@@ -1,0 +1,68 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block content %}
+<h2 class="mb-4">Tablero de Control</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Pedidos Pendientes</h5>
+                <p class="display-4">{{ pedidos_pendientes }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Procesando</h5>
+                <p class="display-4">{{ pedidos_procesando }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Productos Agotados</h5>
+                <p class="display-4">{{ productos_agotados }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0">Últimos Pedidos</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th># Pedido</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in ultimos_pedidos %}
+                <tr>
+                    <td>{{ pedido.numero_pedido }}</td>
+                    <td>{{ pedido.email_cliente }}</td>
+                    <td>{{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                    <td>{{ pedido.total }}€</td>
+                    <td><span class="badge bg-secondary">{{ pedido.get_estado_display }}</span></td>
+                    <td>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center py-3">No hay pedidos recientes.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

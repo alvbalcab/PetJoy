@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel PetJoy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f4f6f9; }
+        .sidebar { min-height: 100vh; background-color: #343a40; color: white; }
+        .sidebar a { color: rgba(255,255,255,.8); text-decoration: none; padding: 10px 15px; display: block; }
+        .sidebar a:hover, .sidebar a.active { background-color: #0d6efd; color: white; }
+        .content { padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <div class="sidebar p-3" style="width: 250px;">
+            <h4 class="text-white mb-4">⚡ PetJoy Admin</h4>
+            <nav class="nav flex-column">
+                <a href="{% url 'custom_admin:dashboard' %}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                <a href="{% url 'custom_admin:lista_productos' %}"><i class="bi bi-box-seam me-2"></i> Productos</a>
+                <a href="{% url 'custom_admin:lista_pedidos' %}"><i class="bi bi-cart3 me-2"></i> Pedidos</a>
+                
+                <hr class="text-white-50"> <a href="{% url 'core:inicio' %}">
+                    <i class="bi bi-shop me-2"></i> Volver a la Tienda
+                </a>
+                
+                <a href="{% url 'clientes:logout' %}">
+                    <i class="bi bi-box-arrow-left me-2"></i> Cerrar Sesión
+                </a>
+            </nav>
+        </div>
+        <div class="flex-grow-1">
+            <div class="content">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

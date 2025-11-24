@@ -1,0 +1,50 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📦 Productos</h2>
+    <a href="{% url 'custom_admin:crear_producto' %}" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nuevo Producto</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.precio }}€</td>
+                    <td>
+                        {% if producto.stock == 0 %}
+                            <span class="text-danger fw-bold">0</span>
+                        {% else %}
+                            {{ producto.stock }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if producto.esta_disponible %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'custom_admin:editar_producto' producto.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'custom_admin:eliminar_producto' producto.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres borrar este producto?');"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

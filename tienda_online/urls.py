@@ -25,6 +25,7 @@ urlpatterns = [
     path('productos/', include('productos.urls')),
     path('pedidos/', include('pedidos.urls')),
     path('cuenta/', include('clientes.urls')),
+    path('panel/', include('custom_admin.urls')),
 ]
 
 # Servir archivos media en desarrollo

@@ -10,3 +10,6 @@ python manage.py collectstatic --no-input
 
 # Aplica cualquier migración pendiente de base de datos
 python manage.py migrate
+
+# Ejecuta el script de personalización
+python personalizar_petjoy.py

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - PetJoy{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header text-center py-4" style="background: linear-gradient(135deg, #FF6B35 0%, #4ECDC4 100%);">
+                    <h3 class="text-white mb-0">
+                        <i class="bi bi-person-plus-fill"></i> Crear Cuenta
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-center text-muted mb-4">
+                        Únete a la familia PetJoy 🐾
+                    </p>
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>¡Ups!</strong> Por favor corrige los errores:
+                            <ul class="mb-0 mt-2">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                <i class="bi bi-person"></i> Nombre *
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.first_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                <i class="bi bi-person"></i> Apellidos *
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.last_name.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <i class="bi bi-envelope"></i> Email *
+                            </label>
+                            {{ form.email }}
+                            <small class="form-text text-muted">
+                                Usarás este email para iniciar sesión
+                            </small>
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.telefono.id_for_label }}" class="form-label">
+                                <i class="bi bi-telephone"></i> Teléfono
+                            </label>
+                            {{ form.telefono }}
+                            <small class="form-text text-muted">Opcional</small>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="{{ form.direccion.id_for_label }}" class="form-label">Dirección *</label>
+                                {{ form.direccion }}
+                                {% for error in form.direccion.errors %} <small class="text-danger">{{ error }}</small> {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.ciudad.id_for_label }}" class="form-label">Ciudad *</label>
+                                {{ form.ciudad }}
+                                {% for error in form.ciudad.errors %} <small class="text-danger">{{ error }}</small> {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.codigo_postal.id_for_label }}" class="form-label">Código Postal *</label>
+                                {{ form.codigo_postal }}
+                                {% for error in form.codigo_postal.errors %} <small class="text-danger">{{ error }}</small> {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock"></i> Contraseña *
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password1.errors.0 }}
+                                </div>
+                            {% else %}
+                                <small class="form-text text-muted">
+                                    Mínimo 8 caracteres. No puede ser muy común.
+                                </small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Confirmar Contraseña *
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password2.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Crear Cuenta
+                            </button>
+                        </div>
+                        
+                        <p class="text-muted text-center mb-0">
+                            <small>* Campos obligatorios</small>
+                        </p>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 bg-light">
+                    <p class="mb-0">
+                        ¿Ya tienes cuenta? 
+                        <a href="{% url 'clientes:login' %}" class="text-decoration-none fw-bold">
+                            Inicia sesión aquí
+                        </a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Beneficios de registrarse -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h6 class="mb-3">
+                        <i class="bi bi-star-fill text-warning"></i> Beneficios de tener una cuenta:
+                    </h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success"></i> 
+                            Seguimiento de tus pedidos
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success"></i> 
+                            Historial de compras
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success"></i> 
+                            Checkout más rápido
+                        </li>
+                        <li class="mb-0">
+                            <i class="bi bi-check-circle-fill text-success"></i> 
+                            Ofertas exclusivas
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

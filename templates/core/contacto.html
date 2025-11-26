@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}Contacto - PetJoy{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-light py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">📞 Contáctanos</h1>
+        <p class="lead">Estamos aquí para ayudarte a ti y a tu mascota</p>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Formulario de Contacto -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-4">
+                        <h3 class="mb-4">✉️ Envíanos un Mensaje</h3>
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="bi bi-person"></i> Nombre *
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       placeholder="Tu nombre" 
+                                       required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="bi bi-envelope"></i> Email *
+                                </label>
+                                <input type="email" 
+                                       class="form-control form-control-lg" 
+                                       id="email" 
+                                       name="email" 
+                                       placeholder="tu@email.com" 
+                                       required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">
+                                    <i class="bi bi-telephone"></i> Teléfono (opcional)
+                                </label>
+                                <input type="tel" 
+                                       class="form-control form-control-lg" 
+                                       id="telefono" 
+                                       name="telefono" 
+                                       placeholder="+34 600 000 000">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="asunto" class="form-label">
+                                    <i class="bi bi-chat-dots"></i> Asunto *
+                                </label>
+                                <select class="form-select form-select-lg" id="asunto" name="asunto" required>
+                                    <option value="">Selecciona un asunto</option>
+                                    <option value="Consulta general">Consulta general</option>
+                                    <option value="Información de productos">Información de productos</option>
+                                    <option value="Estado de mi pedido">Estado de mi pedido</option>
+                                    <option value="Problema con mi pedido">Problema con mi pedido</option>
+                                    <option value="Devoluciones">Devoluciones</option>
+                                    <option value="Sugerencias">Sugerencias</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="mensaje" class="form-label">
+                                    <i class="bi bi-pencil"></i> Mensaje *
+                                </label>
+                                <textarea class="form-control form-control-lg" 
+                                          id="mensaje" 
+                                          name="mensaje" 
+                                          rows="6" 
+                                          placeholder="Cuéntanos cómo podemos ayudarte..."
+                                          required></textarea>
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="acepto" 
+                                       required>
+                                <label class="form-check-label" for="acepto">
+                                    Acepto la política de privacidad y el tratamiento de mis datos
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-send"></i> Enviar Mensaje
+                            </button>
+                            
+                            <p class="text-muted text-center mt-3 mb-0">
+                                <small>* Campos obligatorios</small>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de Contacto -->
+            <div class="col-lg-5">
+                <!-- Datos de Contacto -->
+                <div class="card border-0 shadow-lg mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">📍 Información de Contacto</h4>
+                        
+                        {% if datos_empresa %}
+                        <div class="mb-4">
+                            <h6 class="text-primary">
+                                <i class="bi bi-envelope-fill"></i> Email
+                            </h6>
+                            <p class="mb-0">
+                                <a href="mailto:{{ datos_empresa.email }}" class="text-decoration-none">
+                                    {{ datos_empresa.email }}
+                                </a>
+                            </p>
+                            <small class="text-muted">Respuesta en menos de 24h</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-primary">
+                                <i class="bi bi-telephone-fill"></i> Teléfono
+                            </h6>
+                            <p class="mb-0">
+                                <a href="tel:{{ datos_empresa.telefono }}" class="text-decoration-none">
+                                    {{ datos_empresa.telefono }}
+                                </a>
+                            </p>
+                            <small class="text-muted">Lun-Vie: 9:00 - 18:00h</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-primary">
+                                <i class="bi bi-geo-alt-fill"></i> Dirección
+                            </h6>
+                            <p class="mb-0">
+                                {{ datos_empresa.direccion }}<br>
+                                {{ datos_empresa.codigo_postal }}, {{ datos_empresa.ciudad }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="mb-0">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-share"></i> Síguenos
+                            </h6>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-instagram"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-twitter"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-tiktok"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Horario de Atención -->
+                <div class="card border-0 shadow-lg mb-4" style="background: linear-gradient(135deg, #FF6B35 0%, #4ECDC4 100%);">
+                    <div class="card-body p-4 text-white">
+                        <h5 class="mb-3">
+                            <i class="bi bi-clock"></i> Horario de Atención
+                        </h5>
+                        <table class="table table-borderless text-white mb-0">
+                            <tr>
+                                <td><strong>Lunes - Viernes</strong></td>
+                                <td class="text-end">9:00 - 18:00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sábados</strong></td>
+                                <td class="text-end">10:00 - 14:00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Domingos</strong></td>
+                                <td class="text-end">Cerrado</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- FAQ Rápido -->
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-question-circle"></i> Preguntas Frecuentes
+                        </h5>
+                        <div class="accordion accordion-flush" id="accordionFAQ">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        ¿Cuánto tarda el envío?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                                    <div class="accordion-body">
+                                        Los pedidos se entregan en 24-48 horas laborables. Envío gratis en compras superiores a 50€.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        ¿Puedo devolver un producto?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                                    <div class="accordion-body">
+                                        Sí, tienes 30 días para devolver cualquier producto que no te satisfaga. Consulta nuestra política de devoluciones.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        ¿Los juguetes son seguros?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                                    <div class="accordion-body">
+                                        Todos nuestros productos cumplen con las normativas europeas de seguridad y están fabricados con materiales no tóxicos.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mapa (Opcional) -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="text-center mb-4">📍 Encuéntranos</h3>
+        <div class="card border-0 shadow-lg">
+            <div class="card-body p-0">
+                <div class="ratio ratio-21x9">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.4!2d-3.7037902!3d40.4167754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42287f0000001%3A0x8000000000000!2sMadrid!5e0!3m2!1ses!2ses!4v1234567890" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Otras formas de contacto -->
+<section class="py-5">
+    <div class="container">
+        <h3 class="text-center mb-5">💬 Otras Formas de Contactarnos</h3>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body p-4">
+                        <i class="bi bi-whatsapp text-success" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">WhatsApp</h5>
+                        <p class="text-muted">Chatea con nosotros</p>
+                        <a href="https://wa.me/34900123456" class="btn btn-outline-success" target="_blank">
+                            Abrir WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body p-4">
+                        <i class="bi bi-chat-dots text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">Chat en Vivo</h5>
+                        <p class="text-muted">Respuesta inmediata</p>
+                        <button class="btn btn-outline-primary" onclick="alert('Chat disponible próximamente')">
+                            Iniciar Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body p-4">
+                        <i class="bi bi-headset text-warning" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">Soporte Telefónico</h5>
+                        <p class="text-muted">Llámanos directamente</p>
+                        <a href="tel:+34900123456" class="btn btn-outline-warning">
+                            Llamar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

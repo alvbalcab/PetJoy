@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Carrito de Compra - PetJoy{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Carrito de Compra</h1>
+    
+    {% if carrito %}
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in carrito %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.producto.imagenes.first %}
+                                                <img src="{{ item.producto.imagenes.first.imagen.url }}" 
+                                                     alt="{{ item.producto.nombre }}" 
+                                                     style="width: 60px; height: 60px; object-fit: cover;" 
+                                                     class="me-3 rounded">
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ item.producto.nombre }}</strong><br>
+                                                {% if item.talla %}
+                                                    <small class="text-muted">Talla: {{ item.talla }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.precio }}€</td>
+                                    <td>
+                                        <form method="post" action="{% url 'pedidos:actualizar_carrito' item.producto.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="talla" value="{{ item.talla }}">
+                                            <input type="number" name="cantidad" value="{{ item.cantidad }}" 
+                                                   min="0" max="{{ item.producto.stock }}" 
+                                                   class="form-control form-control-sm" style="width: 70px;"
+                                                   onchange="this.form.submit()">
+                                        </form>
+                                    </td>
+                                    <td><strong>{{ item.total }}€</strong></td>
+                                    <td>
+                                        <a href="{% url 'pedidos:eliminar_carrito' item.producto.id %}?talla={{ item.talla }}" 
+                                           class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Resumen del Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong>{{ carrito.obtener_precio_total|floatformat:2 }}€</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Envío:</span>
+                            <strong>
+                                {% if carrito.obtener_coste_envio == 0 %}
+                                    <span class="text-success">GRATIS</span>
+                                {% else %}
+                                    {{ carrito.obtener_coste_envio|floatformat:2 }}€
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>IVA:</span>
+                            <strong>{{ carrito.obtener_impuestos|floatformat:2 }}€</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fs-5">Total:</span>
+                            <strong class="fs-4 text-primary">{{ carrito.obtener_total_final|floatformat:2 }}€</strong>
+                        </div>
+                        
+                        <a href="{% url 'pedidos:checkout' %}" class="btn btn-primary btn-lg w-100 mb-2">
+                            Proceder al Pago
+                        </a>
+                        <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-secondary w-100">
+                            Seguir Comprando
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle"></i> 
+                    {% if carrito.obtener_coste_envio == 0 %}
+                        ¡Has conseguido envío gratis!
+                    {% else %}
+                        Añade {{ carrito.obtener_precio_total|add:"-50" }}€ más para envío gratis
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            <i class="bi bi-cart-x fs-1 d-block mb-3"></i>
+            <h4>Tu carrito está vacío</h4>
+            <p>Explora nuestro catálogo y añade productos a tu carrito</p>
+            <a href="{% url 'productos:catalogo' %}" class="btn btn-primary">Ver Productos</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

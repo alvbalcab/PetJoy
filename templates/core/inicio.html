@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Inicio - PetJoy{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9"> 
+                <div class="d-flex align-items-start gap-3">
+                    <div class="fs-1"></div> 
+                    <div>
+                        <h1 class="display-4 fw-bold mb-3">
+                        <img src="{% static 'img/favicon.png' %}" height="70">
+                            Bienvenido/a a PetJoy
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Los mejores juguetes para perros y gatos. ¡Diversión garantizada para tu mascota!
+                        </p>
+                        <a href="{% url 'productos:catalogo' %}" class="btn btn-primary btn-lg custom-bg-color">
+                            Ver Juguetes
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categorías -->
+{% if categorias %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4" style="color: #bb4318">Categorías</h2>
+        <div class="row g-4">
+            {% for categoria in categorias %}
+            <div class="col-md-4">
+                <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="text-decoration-none">
+                    <div class="card h-100 text-center">
+                        {% if categoria.imagen %}
+                            <img src="{{ categoria.imagen.url }}" class="card-img-top" alt="{{ categoria.nombre }}">
+                        {% else %}
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                style="height: 200px; background-color: #6e5341 !important; border-radius: 15px 15px 0 0;">
+                                <i class="bi {{ categoria.icono_clase }} fs-1 text-white"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ categoria.nombre }}</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Productos Destacados -->
+{% if productos_destacados %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4" style="color: #bb4318">🌟 Juguetes Destacados</h2>
+        <div class="row g-4">
+            {% for producto in productos_destacados %}
+            <div class="col-md-3">
+                <div class="card h-100">
+                    {% with imagen_url=producto.get_imagen_url %}
+                        {% if imagen_url %}
+                            <img src="{% static imagen_url %}" class="card-img-top product-image" alt="{{ producto.nombre }}">
+                        {% else %}
+                            <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
+                                <i class="bi bi-image fs-1 text-white"></i>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                        <p class="card-text text-muted small">{{ producto.categoria.nombre|default:"Sin categoría" }}</p>
+                        <div class="mt-auto">
+                            {% if producto.tiene_oferta %}
+                                <p class="mb-1">
+                                    <span class="precio-original">{{ producto.precio }}€</span>
+                                    <span class="precio-oferta">{{ producto.precio_oferta }}€</span>
+                                </p>
+                                <span class="badge bg-danger">-{{ producto.descuento_porcentaje }}%</span>
+                            {% else %}
+                                <p class="fw-bold mb-1">{{ producto.precio }}€</p>
+                            {% endif %}
+                            
+                            {% if not producto.stock %}
+                                <span class="badge bg-secondary">Agotado</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-grid gap-2 mt-2">
+                            {% if producto.stock > 0 %}
+                                <form method="post" action="{% url 'pedidos:agregar_carrito' producto.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="cantidad" value="1">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-cart-plus"></i> Agregar
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <a href="{% url 'productos:detalle' producto.slug %}" class="btn btn-outline-primary">Ver Detalles</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-primary">Ver Todos los Productos</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Características -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <i class="bi bi-truck fs-1 text-primary"></i>
+                <h4 class="mt-3">Envío Gratis</h4>
+                <p>En pedidos superiores a 50€</p>
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-shield-check fs-1 text-primary"></i>
+                <h4 class="mt-3">Compra Segura</h4>
+                <p>Pago 100% seguro</p>
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-heart fs-1 text-primary"></i>
+                <h4 class="mt-3">Para Tu Mascota</h4>
+                <p>Productos de calidad 🐶🐱</p>
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-star fs-1 text-primary"></i>
+                <h4 class="mt-3">Diversión Garantizada</h4>
+                <p>¡Les encantará!</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

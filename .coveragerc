@@ -1,0 +1,37 @@
+[run]
+source = .
+omit = 
+    */migrations/*
+    */tests/*
+    */test_*.py
+    */__pycache__/*
+    */venv/*
+    */env/*
+    */virtualenv/*
+    manage.py
+    */settings.py
+    */wsgi.py
+    */asgi.py
+    */admin.py
+    personalizar_petjoy.py
+    install.sh
+    install.bat
+    init_git.sh
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+    @abc.abstractmethod
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml

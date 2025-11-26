@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - PetJoy{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header text-center py-4" style="background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);">
+                    <h3 class="text-white mb-0">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-center text-muted mb-4">
+                        Bienvenido de vuelta 🐾
+                    </p>
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <i class="bi bi-envelope"></i> Email
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="bi bi-lock"></i> Contraseña
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="recordarme">
+                            <label class="form-check-label" for="recordarme">
+                                Recordarme
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Entrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light">
+                    <p class="text-center mb-2">
+                        <a href="#" class="text-decoration-none small">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </p>
+                    <hr class="my-2">
+                    <p class="text-center mb-0">
+                        ¿No tienes cuenta? 
+                        <a href="{% url 'clientes:registro' %}" class="text-decoration-none fw-bold">
+                            Regístrate gratis
+                        </a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Compra como invitado -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body text-center">
+                    <h6 class="mb-3">
+                        <i class="bi bi-cart3"></i> ¿Solo quieres comprar?
+                    </h6>
+                    <p class="text-muted small mb-3">
+                        No es necesario crear una cuenta. Puedes comprar como invitado.
+                    </p>
+                    <a href="{% url 'productos:catalogo' %}" class="btn btn-outline-primary">
+                        Continuar sin cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

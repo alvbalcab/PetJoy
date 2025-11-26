@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Seguimiento de
+Pedido{% endblock %} {% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow p-4">
+        <h2 class="mb-4 text-center">Seguimiento de Pedido</h2>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Número de pedido</label>
+            <input
+              type="text"
+              name="numero_pedido"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email asociado</label>
+            <input type="email" name="email" class="form-control" required />
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">
+            Buscar Pedido
+          </button>
+        </form>
+
+        {% if messages %}
+        <div class="mt-3">
+          {% for message in messages %}
+          <div class="alert alert-danger">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if pedido %}
+      <div class="card shadow mt-4 p-4">
+        <h3 class="mb-3">Pedido #{{ pedido.numero_pedido }}</h3>
+
+        <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+        <p><strong>Total:</strong> {{ pedido.total }}€</p>
+        <p><strong>Fecha:</strong> {{ pedido.fecha_creacion }}</p>
+        <hr />
+
+        <h5>Artículos:</h5>
+        <ul class="list-group">
+          {% for item in pedido.items.all %}
+          <li class="list-group-item d-flex justify-content-between">
+            {{ item.nombre_producto }} x{{ item.cantidad }}
+            <span>{{ item.total }}€</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

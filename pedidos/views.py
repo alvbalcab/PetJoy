@@ -262,20 +262,35 @@ def crear_sesion_stripe(request):
 
 
 # FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
+# FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
 def send_confirmation_email_async(asunto, html_content, email_cliente):
-    """Encapsula la lógica de envío de correo para ser ejecutada en un hilo."""
+    # Los imports se hacen dentro de la función para mayor seguridad en hilos
     from django.core.mail import send_mail
     from django.conf import settings
-    
-    # El proceso de conexión y envío ocurre aquí, fuera del hilo HTTP principal
-    send_mail(
-        asunto,
-        '', 
-        settings.DEFAULT_FROM_EMAIL,
-        [email_cliente],
-        html_message=html_content,
-        fail_silently=False
-    )
+    import traceback # Necesario para imprimir la traza del error
+
+    try:
+        # La conexión/envío es SÍNCRONA dentro de este hilo
+        send_mail(
+            asunto,
+            '', 
+            settings.DEFAULT_FROM_EMAIL,
+            [email_cliente],
+            html_message=html_content,
+            # fail_silently=False fuerza a lanzar la excepción si falla la conexión/autenticación
+            fail_silently=False 
+        )
+        print(f"CORREO ENVIADO EXITOSAMENTE a {email_cliente}") 
+
+    except Exception as e:
+        # CAPTURA Y REPORTE EXPLÍCITO DEL FALLO EN EL LOG
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(f"ERROR CRÍTICO AL ENVIAR CORREO ASÍNCRONO a {email_cliente}: {e}")
+        # Imprime la traza completa (esto es crucial para el diagnóstico)
+        traceback.print_exc()
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+        
 @transaction.atomic
 def pago_exitoso(request):
     """

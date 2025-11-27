@@ -262,7 +262,6 @@ def crear_sesion_stripe(request):
 
 
 # FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
-# FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
 def send_confirmation_email_async(asunto, html_content, email_cliente):
     # Los imports se hacen dentro de la función para mayor seguridad en hilos
     from django.core.mail import send_mail
@@ -290,7 +289,7 @@ def send_confirmation_email_async(asunto, html_content, email_cliente):
         traceback.print_exc()
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-        
+
 @transaction.atomic
 def pago_exitoso(request):
     """

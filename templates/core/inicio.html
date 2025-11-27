@@ -3,27 +3,354 @@
 {% block title %}Inicio - PetJoy{% endblock %}
 
 {% block content %}
+<style>
+    /* ===== HERO SECTION ===== */
+    .hero-section {
+        position: relative;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        background: linear-gradient(135deg, #fff9f7 0%, #fff 50%, #fef6f3 100%);
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 70%;
+        height: 200%;
+        background: radial-gradient(ellipse, rgba(187, 67, 24, 0.08) 0%, transparent 70%);
+        animation: float-bg 15s ease-in-out infinite;
+    }
+    
+    @keyframes float-bg {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-30px, 30px) rotate(5deg); }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(187, 67, 24, 0.1);
+        border-radius: 50px;
+        font-size: 0.85rem;
+        color: #bb4318;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.8s ease;
+    }
+    
+    .hero-badge::before {
+        content: '✨';
+        animation: sparkle 2s ease-in-out infinite;
+    }
+    
+    @keyframes sparkle {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+    
+    .hero-title {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.8s ease 0.1s both;
+    }
+    
+    .hero-title .highlight {
+        position: relative;
+        color: #bb4318;
+        display: inline-block;
+    }
+    
+    .hero-title .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        left: 0;
+        width: 100%;
+        height: 12px;
+        background: rgba(187, 67, 24, 0.15);
+        z-index: -1;
+        border-radius: 4px;
+        transform: skewX(-5deg);
+    }
+    
+    .hero-description {
+        font-size: 1.25rem;
+        color: #666;
+        max-width: 500px;
+        margin-bottom: 2rem;
+        line-height: 1.7;
+        animation: fadeInUp 0.8s ease 0.2s both;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeInUp 0.8s ease 0.3s both;
+    }
+    
+    .btn-hero-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #bb4318 0%, #d4512a 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 1.05rem;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(187, 67, 24, 0.35);
+    }
+    
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(187, 67, 24, 0.45);
+        color: white;
+    }
+    
+    .btn-hero-primary i {
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-hero-primary:hover i {
+        transform: translateX(4px);
+    }
+    
+    .btn-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        background: white;
+        color: #333;
+        font-weight: 600;
+        font-size: 1.05rem;
+        border-radius: 50px;
+        text-decoration: none;
+        border: 2px solid #e5e5e5;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-hero-secondary:hover {
+        border-color: #bb4318;
+        color: #bb4318;
+        transform: translateY(-3px);
+    }
+    
+    /* Floating elements */
+    .hero-floating {
+        position: absolute;
+        font-size: 3rem;
+        opacity: 0.15;
+        animation: float 6s ease-in-out infinite;
+        z-index: 1;
+    }
+    
+    .hero-floating:nth-child(1) { top: 15%; left: 5%; animation-delay: 0s; }
+    .hero-floating:nth-child(2) { top: 70%; left: 15%; animation-delay: 1s; font-size: 2.5rem; }
+    .hero-floating:nth-child(3) { top: 20%; right: 10%; animation-delay: 2s; }
+    .hero-floating:nth-child(4) { bottom: 20%; right: 5%; animation-delay: 0.5s; font-size: 2rem; }
+    .hero-floating:nth-child(5) { top: 50%; left: 8%; animation-delay: 1.5s; font-size: 2rem; }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(10deg); }
+    }
+    
+    /* Hero image/illustration area */
+    .hero-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeInRight 1s ease 0.4s both;
+    }
+    
+    .hero-image-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 450px;
+    }
+    
+    .hero-image-wrapper img {
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1));
+    }
+    
+    .hero-blob {
+        position: absolute;
+        width: 120%;
+        height: 120%;
+        top: -10%;
+        left: -10%;
+        background: linear-gradient(135deg, rgba(187, 67, 24, 0.1) 0%, rgba(212, 98, 74, 0.05) 100%);
+        border-radius: 60% 40% 50% 50% / 50% 50% 40% 60%;
+        z-index: -1;
+        animation: morph 12s ease-in-out infinite;
+    }
+    
+    @keyframes morph {
+        0%, 100% { border-radius: 60% 40% 50% 50% / 50% 50% 40% 60%; }
+        25% { border-radius: 50% 60% 40% 50% / 40% 50% 60% 50%; }
+        50% { border-radius: 40% 50% 60% 40% / 60% 40% 50% 50%; }
+        75% { border-radius: 50% 40% 50% 60% / 50% 60% 40% 40%; }
+    }
+    
+    /* Stats */
+    .hero-stats {
+        display: flex;
+        gap: 40px;
+        margin-top: 3rem;
+        animation: fadeInUp 0.8s ease 0.5s both;
+    }
+    
+    .hero-stat {
+        text-align: center;
+    }
+    
+    .hero-stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #bb4318;
+        line-height: 1;
+    }
+    
+    .hero-stat-label {
+        font-size: 0.85rem;
+        color: #888;
+        margin-top: 4px;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: auto;
+            padding: 60px 0;
+        }
+        
+        .hero-stats {
+            gap: 24px;
+        }
+        
+        .hero-visual {
+            margin-top: 3rem;
+        }
+    }
+    
+    /* ===== CATEGORÍAS ===== */
+    .category-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        border-radius: 50px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        color: #333;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        text-decoration: none;
+    }
+    
+    .category-btn:hover {
+        background: #bb4318;
+        border-color: #bb4318;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(187, 67, 24, 0.3);
+    }
+    
+    .categories-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+</style>
+
 <!-- Hero Section -->
-<section class="bg-light py-5">
+<section class="hero-section">
+    <!-- Floating decorative elements -->
+    <div class="hero-floating">🐕</div>
+    <div class="hero-floating">🐈</div>
+    <div class="hero-floating">🦴</div>
+    <div class="hero-floating">🐾</div>
+    <div class="hero-floating">🎾</div>
+    
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-7 col-md-9"> 
-                <div class="d-flex align-items-start gap-3">
-                    <div class="fs-1"></div> 
-                    <div>
-                        <h1 class="display-4 fw-bold mb-3">
-                        <img src="{% static 'img/favicon.png' %}" height="70">
-                            Bienvenido/a a PetJoy
-                        </h1>
-                        <p class="lead text-muted mb-4">
-                            Los mejores juguetes para perros y gatos. ¡Diversión garantizada para tu mascota!
-                        </p>
-                        <a href="{% url 'productos:catalogo' %}" class="btn btn-primary btn-lg custom-bg-color">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    
+                    <h1 class="hero-title">
+                        Bienvenido/a a<br>
+                        <span class="highlight">PetJoy</span>
+                    </h1>
+                    
+                    <p class="hero-description">
+                        Descubre los mejores juguetes para perros y gatos. Diversión garantizada para tu mejor amigo peludo.
+                    </p>
+                    
+                    <div class="hero-buttons">
+                        <a href="{% url 'productos:catalogo' %}" class="btn-hero-primary">
                             Ver Juguetes
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="#categorias" class="btn-hero-secondary">
+                            <i class="bi bi-grid"></i>
+                            Explorar Categorías
                         </a>
                     </div>
                 </div>
-
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="hero-image-wrapper">
+                        <div class="hero-blob"></div>
+                        <img src="{% static 'img/favicon.png' %}" alt="PetJoy" style="max-width: 300px; margin: 0 auto; display: block;">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -31,28 +358,14 @@
 
 <!-- Categorías -->
 {% if categorias %}
-<section class="py-5">
+<section class="py-5" id="categorias">
     <div class="container">
         <h2 class="text-center mb-4" style="color: #bb4318">Categorías</h2>
-        <div class="row g-4">
+        <div class="categories-wrapper">
             {% for categoria in categorias %}
-            <div class="col-md-4">
-                <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="text-decoration-none">
-                    <div class="card h-100 text-center">
-                        {% if categoria.imagen %}
-                            <img src="{{ categoria.imagen.url }}" class="card-img-top" alt="{{ categoria.nombre }}">
-                        {% else %}
-                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
-                                style="height: 200px; background-color: #6e5341 !important; border-radius: 15px 15px 0 0;">
-                                <i class="bi {{ categoria.icono_clase }} fs-1 text-white"></i>
-                            </div>
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ categoria.nombre }}</h5>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="category-btn">
+                {{ categoria.nombre }}
+            </a>
             {% endfor %}
         </div>
     </div>
@@ -63,7 +376,7 @@
 {% if productos_destacados %}
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-4" style="color: #bb4318">🌟 Juguetes Destacados</h2>
+        <h2 class="text-center mb-4" style="color: #bb4318"> Juguetes Destacados</h2>
         <div class="row g-4">
             {% for producto in productos_destacados %}
             <div class="col-md-3">
@@ -136,7 +449,7 @@
             <div class="col-md-3">
                 <i class="bi bi-heart fs-1 text-primary"></i>
                 <h4 class="mt-3">Para Tu Mascota</h4>
-                <p>Productos de calidad 🐶🐱</p>
+                <p>Productos de calidad</p>
             </div>
             <div class="col-md-3">
                 <i class="bi bi-star fs-1 text-primary"></i>

@@ -20,6 +20,7 @@ from .models import Pedido, ItemPedido
 from .forms import DatosEnvioForm
 from core.models import DatosEmpresa
 from django.db import transaction
+import threading
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -137,13 +138,13 @@ def checkout(request):
 def pago_contrareembolso(request):
     """
     Procesa la solicitud de pago contrareembolso, crea el pedido final en DB, 
-    envía el email y limpia la sesión
+    envía el email en un hilo y limpia la sesión.
     """ 
 
     # 1. Asegura que tenemos los datos en la sesión y el carrito no está vacío
     datos_envio = request.session.get('datos_envio_checkout')
     carrito = Carrito(request)
- 
+   
     # Si falta la sesión o el carrito está vacío, se retorna al checkout.
     if not datos_envio or len(carrito) == 0:
         messages.error(request, "Faltan datos de envío o el carrito está vacío")
@@ -158,7 +159,6 @@ def pago_contrareembolso(request):
         datos_empresa = DatosEmpresa.get_datos()
 
         # Crear el Objeto Pedido (Registro definitivo)
-        # Requisito: Método de pago Contrareembolso y estado 'pendiente'
         pedido = Pedido.objects.create(
             cliente=request.user if request.user.is_authenticated else None,
             nombre_cliente=datos_envio['nombre'],
@@ -169,12 +169,14 @@ def pago_contrareembolso(request):
             ciudad_envio=datos_envio['ciudad'],
             codigo_postal_envio=datos_envio['codigo_postal'],
             subtotal=subtotal,
+            impuestos=impuestos,
             coste_entrega=envio,
             total=total,
             metodo_pago='contrareembolso', 
             estado='pendiente', # Estado inicial para contrareembolso
-            notas=datos_envio.get('notas', '') or "Pago Contrareembolso. Pendiente de recepción.", # Uso get('notas', '') para seguridad
+            notas=datos_envio.get('notas', '') or "Pago Contrareembolso. Pendiente de recepción.", 
         )
+        
         # Crear los Items del Pedido y Actualizar Stock (¡Importante la transacción!)
         for item in carrito:
             ItemPedido.objects.create(
@@ -185,20 +187,28 @@ def pago_contrareembolso(request):
                 cantidad=item['cantidad'],
                 precio_unitario=item['precio'],
                 total=item['total'],
-        )
+            )
             # Actualización de stock
             producto = item['producto']
             producto.stock -= item['cantidad']
             producto.save()
 
-        # Enviar Email de Confirmación
         asunto = f'🎉 Confirmación de Pedido PetJoy #{pedido.numero_pedido} (Contrareembolso)'
         html_content = render_to_string('pedidos/email_confirmacion.html', {
             'pedido': pedido,
             'datos_empresa': datos_empresa,
         })
-        # Se asume que deseas enviar el email de confirmación incluso con contrareembolso
-        send_mail(asunto, '', settings.DEFAULT_FROM_EMAIL, [pedido.email_cliente], html_message=html_content, fail_silently=True)
+        
+        email_thread = threading.Thread(
+            target=send_confirmation_email_async,
+            args=[
+                asunto, 
+                html_content, 
+                pedido.email_cliente
+            ]
+        )
+        email_thread.start()
+        # ------------------------------------------------------------------
 
         # Limpiar Carrito y Datos de Sesión
         request.session['pedido_id_confirmacion'] = pedido.id 
@@ -215,6 +225,7 @@ def pago_contrareembolso(request):
         messages.error(request, f"Error al crear el pedido contrareembolso: {e}")
         return redirect('pedidos:checkout')
     
+
 def crear_sesion_stripe(request):
     """Crea la sesión de checkout en Stripe y devuelve la URL para redirigir."""
     carrito = Carrito(request)
@@ -257,6 +268,33 @@ def crear_sesion_stripe(request):
         messages.error(request, f"Error al iniciar el pago con Stripe: {e}. Inténtalo de nuevo.")
         return redirect('pedidos:checkout')
 
+
+# FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
+def send_confirmation_email_async(asunto, html_content, email_cliente):
+    # Los imports se hacen dentro de la función para mayor seguridad en hilos
+    from django.core.mail import send_mail
+    from django.conf import settings
+    import traceback # Asegúrate de que traceback esté disponible
+
+    try:
+        send_mail(
+            asunto,
+            '', 
+            settings.DEFAULT_FROM_EMAIL,
+            [email_cliente],
+            html_message=html_content,
+            fail_silently=False # Fuerza la excepción
+        )
+        print(f"CORREO ENVIADO EXITOSAMENTE a {email_cliente}") 
+
+    except Exception as e:
+        # ESTE ES EL CÓDIGO QUE NECESITA EJECUTARSE
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(f"ERROR CRÍTICO AL ENVIAR CORREO ASÍNCRONO a {email_cliente}: {e}")
+        traceback.print_exc() # Imprime el stack trace del fallo SMTP
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+@transaction.atomic
 def pago_exitoso(request):
     """
     Verifica el pago, crea el pedido final en DB, envía el email y limpia la sesión.
@@ -283,7 +321,6 @@ def pago_exitoso(request):
              messages.info(request, "El pedido ya fue procesado. Revisa tu correo.")
              return redirect('pedidos:seguimiento')
 
-        # Totales del carrito antes de limpiarlo
         subtotal = carrito.obtener_precio_total()
         envio = carrito.obtener_coste_envio()
         impuestos = carrito.obtener_impuestos()
@@ -329,8 +366,15 @@ def pago_exitoso(request):
             'pedido': pedido,
             'datos_empresa': datos_empresa,
         })
-        send_mail(asunto, '', settings.DEFAULT_FROM_EMAIL, [pedido.email_cliente], html_message=html_content, fail_silently=True)
-        
+        email_thread = threading.Thread(
+            target=send_confirmation_email_async,
+            args=[
+                asunto, 
+                html_content, 
+                pedido.email_cliente
+            ]
+        )
+        email_thread.start()
         # Limpiar Carrito y Datos de Sesión
         request.session['pedido_id_confirmacion'] = pedido.id 
         del request.session['datos_envio_checkout']

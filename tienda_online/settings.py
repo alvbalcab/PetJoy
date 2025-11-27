@@ -153,13 +153,24 @@ LOGIN_REDIRECT_URL = 'core:inicio'
 LOGOUT_REDIRECT_URL = 'core:inicio'
 
 # Configuración de email (para desarrollo)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# 📧 SMTP (PARA PRODUCCIÓN)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Claves leídas del entorno de Render (Seguridad)
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') 
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # El remitente por defecto será el HOST_USER
+
+# 💳 STRIPE
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_MARCADOR_DE_FALLO')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', 'pk_test_MARCADOR_DE_FALLO')
+SESSION_CURRENCY = 'eur'
 
 # Configuración de sesión para carrito
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 86400  # 24 horas
-
-# Configuración de stripe
-STRIPE_SECRET_KEY = 'sk_test_51SQv22JjcGoW4r6WIYcd1ovILog8D8QGh4WCaR2t6hcbfCB7fu1D7rJFgJYw8096tIhlNlGkaaLWob3t8K02rdPD00s4EE3Dbx'
-STRIPE_PUBLIC_KEY = 'pk_test_51SQv22JjcGoW4r6WLs5oEwy6gHwXI5YMAWoSiHUOMC9d4ydYhLJibY8rtJ4uQDxBdpvPeIsnKl9zuRi5n8t1v7jZ00Psj0zXOm'
-SESSION_CURRENCY = 'eur'

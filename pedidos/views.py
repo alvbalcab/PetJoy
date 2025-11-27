@@ -1,3 +1,11 @@
+"""Vistas relacionadas con el flujo de pedidos, checkout y pagos.
+
+Este módulo contiene las vistas que gestionan el carrito, el proceso de
+checkout (incluyendo integración con Stripe) y las páginas de seguimiento
+y confirmación de pedidos. Las funciones devuelven respuestas HTTP y están
+diseñadas para usarse con las plantillas en `templates/pedidos/`.
+"""
+
 import stripe
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404

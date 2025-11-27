@@ -1,3 +1,10 @@
+"""Pruebas end-to-end (UI) usando Selenium para flujos críticos.
+
+Estos tests arrancan un servidor live y controlan un navegador real para
+verificar flujos de compra, carrito, registro, panel administrativo y
+otras funciones que requieren interacción completa del frontend.
+"""
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -15,7 +22,14 @@ from pedidos.models import Pedido
 
 User = get_user_model()
 
+
 class PetJoyFullSystemTest(StaticLiveServerTestCase):
+    """Test suite de integración que automatiza el navegador.
+
+    Contiene helpers reutilizables (`login_como`, `click_seguro`) y tests
+    que cubren login, búsqueda, compra (contrareembolso y tarjeta), gestión
+    del carrito, registro y flujos del panel de administración.
+    """
 
     def setUp(self):
         # Configuración del Navegador

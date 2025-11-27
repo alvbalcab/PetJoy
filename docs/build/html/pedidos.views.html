@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pedidos.views module &mdash; Documentación de PetJoy API y Web</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=4936afed"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="productos package" href="productos.html" />
+    <link rel="prev" title="pedidos.urls module" href="pedidos.urls.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PetJoy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">clientes package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">core package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="pedidos.html">pedidos package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pedidos.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pedidos.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pedidos.admin.html">pedidos.admin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.apps.html">pedidos.apps module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.carrito.html">pedidos.carrito module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.context_processors.html">pedidos.context_processors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.forms.html">pedidos.forms module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.models.html">pedidos.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.tests.html">pedidos.tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pedidos.urls.html">pedidos.urls module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pedidos.views module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.actualizar_carrito"><code class="docutils literal notranslate"><span class="pre">actualizar_carrito()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.agregar_al_carrito"><code class="docutils literal notranslate"><span class="pre">agregar_al_carrito()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.checkout"><code class="docutils literal notranslate"><span class="pre">checkout()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.confirmacion_pedido"><code class="docutils literal notranslate"><span class="pre">confirmacion_pedido()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.crear_sesion_stripe"><code class="docutils literal notranslate"><span class="pre">crear_sesion_stripe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.eliminar_del_carrito"><code class="docutils literal notranslate"><span class="pre">eliminar_del_carrito()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.email_confirmacion"><code class="docutils literal notranslate"><span class="pre">email_confirmacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.mis_pedidos"><code class="docutils literal notranslate"><span class="pre">mis_pedidos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.pago_cancelado"><code class="docutils literal notranslate"><span class="pre">pago_cancelado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.pago_contrareembolso"><code class="docutils literal notranslate"><span class="pre">pago_contrareembolso()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.pago_exitoso"><code class="docutils literal notranslate"><span class="pre">pago_exitoso()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.seguimiento_pedido"><code class="docutils literal notranslate"><span class="pre">seguimiento_pedido()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pedidos.views.ver_carrito"><code class="docutils literal notranslate"><span class="pre">ver_carrito()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pedidos.html#module-pedidos">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="productos.html">productos package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tienda_online.html">tienda_online package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_admin.html">custom_admin package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">manage module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="personalizar_petjoy.html">personalizar_petjoy module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_carrito.html">test_carrito module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PetJoy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pedidos.html">pedidos package</a></li>
+      <li class="breadcrumb-item active">pedidos.views module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pedidos.views.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pedidos.views">
+<span id="pedidos-views-module"></span><h1>pedidos.views module<a class="headerlink" href="#module-pedidos.views" title="Link to this heading"></a></h1>
+<p>Vistas relacionadas con el flujo de pedidos, checkout y pagos.</p>
+<p>Este módulo contiene las vistas que gestionan el carrito, el proceso de
+checkout (incluyendo integración con Stripe) y las páginas de seguimiento
+y confirmación de pedidos. Las funciones devuelven respuestas HTTP y están
+diseñadas para usarse con las plantillas en <cite>templates/pedidos/</cite>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.actualizar_carrito">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">actualizar_carrito</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">producto_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.actualizar_carrito" title="Link to this definition"></a></dt>
+<dd><p>Actualizar cantidad de un producto en el carrito</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.agregar_al_carrito">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">agregar_al_carrito</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">producto_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.agregar_al_carrito" title="Link to this definition"></a></dt>
+<dd><p>Agregar producto al carrito</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.checkout">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">checkout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.checkout" title="Link to this definition"></a></dt>
+<dd><p>Captura los datos de envío y contacto. 
+Si el usuario está registrado, precarga datos. Si es anónimo, solicita todos.
+Guarda los datos en la sesión para la creación del pedido posterior.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.confirmacion_pedido">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">confirmacion_pedido</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedido_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.confirmacion_pedido" title="Link to this definition"></a></dt>
+<dd><p>Página de confirmación del pedido. Obtiene el pedido ID de la sesión.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.crear_sesion_stripe">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">crear_sesion_stripe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.crear_sesion_stripe" title="Link to this definition"></a></dt>
+<dd><p>Crea la sesión de checkout en Stripe y devuelve la URL para redirigir.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.eliminar_del_carrito">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">eliminar_del_carrito</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">producto_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.eliminar_del_carrito" title="Link to this definition"></a></dt>
+<dd><p>Eliminar producto del carrito</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.email_confirmacion">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">email_confirmacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.email_confirmacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.mis_pedidos">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">mis_pedidos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.mis_pedidos" title="Link to this definition"></a></dt>
+<dd><p>Lista de pedidos del usuario autenticado</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.pago_cancelado">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">pago_cancelado</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.pago_cancelado" title="Link to this definition"></a></dt>
+<dd><p>Muestra una página informando que el pago ha sido cancelado.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.pago_contrareembolso">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">pago_contrareembolso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.pago_contrareembolso" title="Link to this definition"></a></dt>
+<dd><p>Procesa la solicitud de pago contrareembolso, crea el pedido final en DB, 
+envía el email y limpia la sesión</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.pago_exitoso">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">pago_exitoso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.pago_exitoso" title="Link to this definition"></a></dt>
+<dd><p>Verifica el pago, crea el pedido final en DB, envía el email y limpia la sesión.
+Usa “confirmacion.html” y “email_confirmacion.html”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.seguimiento_pedido">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">seguimiento_pedido</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.seguimiento_pedido" title="Link to this definition"></a></dt>
+<dd><p>Maneja el seguimiento de un pedido, permitiendo la búsqueda automática 
+o la búsqueda manual.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pedidos.views.ver_carrito">
+<span class="sig-prename descclassname"><span class="pre">pedidos.views.</span></span><span class="sig-name descname"><span class="pre">ver_carrito</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pedidos.views.ver_carrito" title="Link to this definition"></a></dt>
+<dd><p>Muestra la página completa de la cesta.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="pedidos.urls.html" class="btn btn-neutral float-left" title="pedidos.urls module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="productos.html" class="btn btn-neutral float-right" title="productos package" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, G3.12.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

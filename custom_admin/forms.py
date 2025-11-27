@@ -1,8 +1,20 @@
+"""Formularios usados en la interfaz administrativa personalizada.
+
+Contiene formularios para gestionar productos y para actualizar el
+estado de los pedidos desde el panel de administración a medida.
+"""
+
 from django import forms
 from productos.models import Producto, ImagenProducto
 from pedidos.models import Pedido
 
+
 class ProductoForm(forms.ModelForm):
+    """Formulario para crear/editar `Producto` desde el panel personalizado.
+
+    Añade un campo opcional `imagen_principal` y define widgets para los
+    campos principales del producto.
+    """
     imagen_principal = forms.ImageField(required=False, label="Imagen Principal")
 
     class Meta:
@@ -20,7 +32,9 @@ class ProductoForm(forms.ModelForm):
             'esta_disponible': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+
 class EstadoPedidoForm(forms.ModelForm):
+    """Formulario reducido para actualizar únicamente el `estado` de un `Pedido`."""
     class Meta:
         model = Pedido
         fields = ['estado']

@@ -1,3 +1,9 @@
+"""Vistas generales del sitio: inicio, acerca de y contacto.
+
+Estas vistas cargan contenido del catálogo y gestionan el envío de
+mensajes de contacto usando la configuración en `DatosEmpresa`.
+"""
+
 from django.shortcuts import render
 from productos.models import Producto, Categoria
 from core.models import DatosEmpresa

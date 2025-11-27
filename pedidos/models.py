@@ -1,3 +1,10 @@
+"""Modelos que representan carritos y pedidos.
+
+Contiene `Carrito`/`ItemCarrito` para usuarios autenticados y las clases
+`Pedido`/`ItemPedido` que almacenan la información persistente de cada
+compra realizada en la tienda.
+"""
+
 from django.db import models
 from django.conf import settings
 from productos.models import Producto

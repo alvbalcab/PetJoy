@@ -266,29 +266,25 @@ def send_confirmation_email_async(asunto, html_content, email_cliente):
     # Los imports se hacen dentro de la función para mayor seguridad en hilos
     from django.core.mail import send_mail
     from django.conf import settings
-    import traceback # Necesario para imprimir la traza del error
+    import traceback # Asegúrate de que traceback esté disponible
 
     try:
-        # La conexión/envío es SÍNCRONA dentro de este hilo
         send_mail(
             asunto,
             '', 
             settings.DEFAULT_FROM_EMAIL,
             [email_cliente],
             html_message=html_content,
-            # fail_silently=False fuerza a lanzar la excepción si falla la conexión/autenticación
-            fail_silently=False 
+            fail_silently=False # Fuerza la excepción
         )
         print(f"CORREO ENVIADO EXITOSAMENTE a {email_cliente}") 
 
     except Exception as e:
-        # CAPTURA Y REPORTE EXPLÍCITO DEL FALLO EN EL LOG
+        # ESTE ES EL CÓDIGO QUE NECESITA EJECUTARSE
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print(f"ERROR CRÍTICO AL ENVIAR CORREO ASÍNCRONO a {email_cliente}: {e}")
-        # Imprime la traza completa (esto es crucial para el diagnóstico)
-        traceback.print_exc()
+        traceback.print_exc() # Imprime el stack trace del fallo SMTP
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
 
 @transaction.atomic
 def pago_exitoso(request):

@@ -274,7 +274,7 @@ def send_confirmation_email_async(asunto, html_content, email_cliente):
         settings.DEFAULT_FROM_EMAIL,
         [email_cliente],
         html_message=html_content,
-        fail_silently=True
+        fail_silently=False
     )
 @transaction.atomic
 def pago_exitoso(request):

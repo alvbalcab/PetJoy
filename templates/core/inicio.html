@@ -3,6 +3,39 @@
 {% block title %}Inicio - PetJoy{% endblock %}
 
 {% block content %}
+<style>
+    /* Estilos de botones para categorías */
+    .category-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        border-radius: 50px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        color: #333;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        text-decoration: none;
+    }
+    
+    .category-btn:hover {
+        background: #bb4318;
+        border-color: #bb4318;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(187, 67, 24, 0.3);
+    }
+    
+    .categories-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+</style>
+
 <!-- Hero Section -->
 <section class="bg-light py-5">
     <div class="container">
@@ -34,25 +67,11 @@
 <section class="py-5">
     <div class="container">
         <h2 class="text-center mb-4" style="color: #bb4318">Categorías</h2>
-        <div class="row g-4">
+        <div class="categories-wrapper">
             {% for categoria in categorias %}
-            <div class="col-md-4">
-                <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="text-decoration-none">
-                    <div class="card h-100 text-center">
-                        {% if categoria.imagen %}
-                            <img src="{{ categoria.imagen.url }}" class="card-img-top" alt="{{ categoria.nombre }}">
-                        {% else %}
-                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
-                                style="height: 200px; background-color: #6e5341 !important; border-radius: 15px 15px 0 0;">
-                                <i class="bi {{ categoria.icono_clase }} fs-1 text-white"></i>
-                            </div>
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ categoria.nombre }}</h5>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            <a href="{% url 'productos:catalogo' %}?categoria={{ categoria.id }}" class="category-btn">
+                {{ categoria.nombre }}
+            </a>
             {% endfor %}
         </div>
     </div>

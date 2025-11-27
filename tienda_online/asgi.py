@@ -1,10 +1,8 @@
-"""
-ASGI config for tienda_online project.
+"""Configuración ASGI para `tienda_online`.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
+Expone la variable `application` que el servidor ASGI utilizará para
+servir la aplicación Django. No modifica la lógica aportada por
+`django.core.asgi.get_asgi_application()`.
 """
 
 import os

@@ -1,3 +1,9 @@
+"""Módulo con la clase `Carrito` que encapsula la lógica del carrito de compra.
+
+La clase gestiona el almacenamiento en la sesión, la adición/actualización de
+productos, el cálculo de totales, impuestos y costes de envío.
+"""
+
 from decimal import Decimal
 from django.conf import settings
 from productos.models import Producto

@@ -1,3 +1,5 @@
+"""Rutas del panel administrativo personalizado (`custom_admin`)."""
+
 from django.urls import path
 from . import views
 

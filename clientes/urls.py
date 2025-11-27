@@ -1,3 +1,10 @@
+"""Rutas (URL patterns) para la app `clientes`.
+
+Incluye rutas para registro, autenticación, gestión de perfil y los
+endpoints para cambio y recuperación de contraseña usando las vistas
+genéricas de `django.contrib.auth`.
+"""
+
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views

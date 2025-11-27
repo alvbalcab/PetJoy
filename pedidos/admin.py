@@ -1,8 +1,15 @@
+"""Administración de pedidos y carritos en el panel de Django admin.
+
+Incluye configuraciones para ver y gestionar `Pedido`, sus items y los
+carritos asociados a usuarios.
+"""
+
 from django.contrib import admin
 from .models import Pedido, ItemPedido, Carrito, ItemCarrito
 
 
 class ItemPedidoInline(admin.TabularInline):
+    """Inline que muestra los `ItemPedido` dentro de la vista del `Pedido`."""
     model = ItemPedido
     extra = 0
     readonly_fields = ['nombre_producto', 'talla', 'cantidad', 'precio_unitario', 'total']
@@ -10,6 +17,11 @@ class ItemPedidoInline(admin.TabularInline):
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
+    """Admin para el modelo `Pedido`.
+
+    Ofrece campos solo lectura para números de pedido, listados por fecha
+    y filtros por estado y método de pago.
+    """
     list_display = ['numero_pedido', 'nombre_cliente', 'email_cliente', 'fecha_creacion', 'estado', 'total', 'metodo_pago']
     list_filter = ['estado', 'metodo_pago', 'fecha_creacion']
     search_fields = ['numero_pedido', 'nombre_cliente', 'apellidos_cliente', 'email_cliente', 'telefono_cliente']
@@ -38,12 +50,14 @@ class PedidoAdmin(admin.ModelAdmin):
 
 
 class ItemCarritoInline(admin.TabularInline):
+    """Inline que muestra los `ItemCarrito` dentro del `Carrito`."""
     model = ItemCarrito
     extra = 0
 
 
 @admin.register(Carrito)
 class CarritoAdmin(admin.ModelAdmin):
+    """Admin para el modelo `Carrito` asociado a usuarios."""
     list_display = ['cliente', 'cantidad_items', 'total', 'fecha_actualizacion']
     search_fields = ['cliente__username', 'cliente__email']
     inlines = [ItemCarritoInline]

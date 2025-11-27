@@ -1,10 +1,8 @@
-"""
-WSGI config for tienda_online project.
+"""Configuración WSGI para `tienda_online`.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
+Exponemos la variable `application` que el servidor WSGI utiliza para
+iniciar la aplicación Django. Mantiene la configuración estándar generada
+por `django-admin startproject`.
 """
 
 import os

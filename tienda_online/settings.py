@@ -157,7 +157,7 @@ LOGOUT_REDIRECT_URL = 'core:inicio'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_SENDER = "petjoy.teams@gmail.com"
 TEMPLATE_PEDIDO_ID = "d-91ed6a250f6a4d938c42f6e4b65af0ea"
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "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")
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "SG.DUMMY_API_KEY_FOR_DEVELOPMENT_ONLY")
 DEFAULT_FROM_EMAIL = EMAIL_SENDER
 
 # Configuración SMTP estándar

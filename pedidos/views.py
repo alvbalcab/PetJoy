@@ -13,6 +13,7 @@ from .forms import DatosEnvioForm
 from core.models import DatosEmpresa
 from django.db import transaction
 import threading
+from tienda_online.utils import enviar_email_async
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -185,22 +186,35 @@ def pago_contrareembolso(request):
             producto.stock -= item['cantidad']
             producto.save()
 
-        asunto = f'🎉 Confirmación de Pedido PetJoy #{pedido.numero_pedido} (Contrareembolso)'
-        html_content = render_to_string('pedidos/email_confirmacion.html', {
-            'pedido': pedido,
-            'datos_empresa': datos_empresa,
-        })
-        
-        email_thread = threading.Thread(
-            target=send_confirmation_email_async,
-            args=[
-                asunto, 
-                html_content, 
-                pedido.email_cliente
+        # 1. Preparar el JSON (Payload) para la plantilla dinámica
+        datos_para_sendgrid = {
+            'nombre_cliente': pedido.nombre_cliente,
+            'numero_pedido': pedido.numero_pedido,
+            'subtotal': f"{subtotal:.2f}€",
+            'coste_entrega': f"{envio:.2f}€",
+            'impuestos': f"{impuestos:.2f}€",
+            'total_final': f"{total:.2f}€",
+            'iva_porcentaje': f"{datos_empresa.iva_porcentaje:.2f}",
+            'direccion_envio': pedido.direccion_envio,
+            'codigo_postal_envio': pedido.codigo_postal_envio,
+            'ciudad_envio': pedido.ciudad_envio,
+            'telefono_cliente': pedido.telefono_cliente,
+            'enlace_seguimiento': request.build_absolute_uri(f'/pedidos/seguimiento/?numero_pedido={pedido.numero_pedido}'),
+            'items': [
+                {
+                    'nombre_producto': item['producto'].nombre,
+                    'cantidad': item['cantidad'],
+                    'total_item': f"{item['total']:.2f}€",
+                } for item in carrito
             ]
+        }
+
+        # 2. Enviar el Email de Confirmación a través de SendGrid
+        enviar_email_async(
+            destinatario=pedido.email_cliente,
+            template_id=settings.TEMPLATE_PEDIDO_ID, # Usar la constante de settings
+            datos_dinamicos=datos_para_sendgrid
         )
-        email_thread.start()
-        # ------------------------------------------------------------------
 
         # Limpiar Carrito y Datos de Sesión
         request.session['pedido_id_confirmacion'] = pedido.id 
@@ -260,22 +274,6 @@ def crear_sesion_stripe(request):
         messages.error(request, f"Error al iniciar el pago con Stripe: {e}. Inténtalo de nuevo.")
         return redirect('pedidos:checkout')
 
-
-# FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
-def send_confirmation_email_async(asunto, html_content, email_cliente):
-    """Encapsula la lógica de envío de correo para ser ejecutada en un hilo."""
-    from django.core.mail import send_mail
-    from django.conf import settings
-    
-    # El proceso de conexión y envío ocurre aquí, fuera del hilo HTTP principal
-    send_mail(
-        asunto,
-        '', 
-        settings.DEFAULT_FROM_EMAIL,
-        [email_cliente],
-        html_message=html_content,
-        fail_silently=False
-    )
 @transaction.atomic
 def pago_exitoso(request):
     """
@@ -342,21 +340,36 @@ def pago_exitoso(request):
             producto.stock -= item['cantidad']
             producto.save()
             
-        # Enviar Email de Confirmación
-        asunto = f'🎉 Confirmación de Pedido PetJoy #{pedido.numero_pedido}'
-        html_content = render_to_string('pedidos/email_confirmacion.html', {
-            'pedido': pedido,
-            'datos_empresa': datos_empresa,
-        })
-        email_thread = threading.Thread(
-            target=send_confirmation_email_async,
-            args=[
-                asunto, 
-                html_content, 
-                pedido.email_cliente
+        # 1. Preparar el JSON (Payload) para la plantilla dinámica
+        datos_para_sendgrid = {
+            'nombre_cliente': pedido.nombre_cliente,
+            'numero_pedido': pedido.numero_pedido,
+            'subtotal': f"{subtotal:.2f}€",
+            'coste_entrega': f"{envio:.2f}€",
+            'impuestos': f"{impuestos:.2f}€",
+            'total_final': f"{total:.2f}€",
+            'iva_porcentaje': f"{datos_empresa.iva_porcentaje:.2f}",
+            'direccion_envio': pedido.direccion_envio,
+            'codigo_postal_envio': pedido.codigo_postal_envio,
+            'ciudad_envio': pedido.ciudad_envio,
+            'telefono_cliente': pedido.telefono_cliente,
+            'enlace_seguimiento': request.build_absolute_uri(f'/pedidos/seguimiento/?numero_pedido={pedido.numero_pedido}'),
+            'items': [
+                {
+                    'nombre_producto': item['producto'].nombre,
+                    'cantidad': item['cantidad'],
+                    'total_item': f"{item['total']:.2f}€",
+                } for item in carrito
             ]
+        }
+
+        # 2. Enviar el Email de Confirmación a través de SendGrid
+        enviar_email_async(
+            destinatario=pedido.email_cliente,
+            template_id=settings.TEMPLATE_PEDIDO_ID, # Usar la constante de settings
+            datos_dinamicos=datos_para_sendgrid
         )
-        email_thread.start()
+
         # Limpiar Carrito y Datos de Sesión
         request.session['pedido_id_confirmacion'] = pedido.id 
         del request.session['datos_envio_checkout']
@@ -439,19 +452,3 @@ def mis_pedidos(request):
         'pedidos': pedidos,
     }
     return render(request, 'pedidos/mis_pedidos.html', context)
-
-def email_confirmacion(request):
-    pedido = get_object_or_404(Pedido, numero_pedido=1)  # Cambiar por un ID válido para pruebas
-    datos_empresa = DatosEmpresa.get_datos()
-    
-    asunto = f'Confirmación de Pedido #{pedido.numero_pedido}'
-    mensaje = render_to_string('pedidos/email_confirmacion.html', {
-        'pedido': pedido,
-        'datos_empresa': datos_empresa,
-    })
-    
-    context = {
-        'asunto': asunto,
-        'mensaje': mensaje,
-    }
-    return render(request, 'pedidos/email_preview.html', context)

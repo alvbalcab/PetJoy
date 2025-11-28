@@ -155,16 +155,23 @@ LOGOUT_REDIRECT_URL = 'core:inicio'
 # Configuración de email (para desarrollo)
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# 📧 SMTP (PARA PRODUCCIÓN)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# Configuración de email con SendGrid
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_SENDER = "petjoy.teams@gmail.com"
+TEMPLATE_PEDIDO_ID = "d-91ed6a250f6a4d938c42f6e4b65af0ea"
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "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")
+DEFAULT_FROM_EMAIL = EMAIL_SENDER
 
-# Claves leídas del entorno de Render (Seguridad)
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') 
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # El remitente por defecto será el HOST_USER
+# Configuración SMTP estándar
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+
+# # Claves leídas del entorno de Render (Seguridad)
+# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') 
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # El remitente por defecto será el HOST_USER
 
 # 💳 STRIPE
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_MARCADOR_DE_FALLO')

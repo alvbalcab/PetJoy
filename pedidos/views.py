@@ -1,3 +1,11 @@
+"""Vistas relacionadas con el flujo de pedidos, checkout y pagos.
+
+Este módulo contiene las vistas que gestionan el carrito, el proceso de
+checkout (incluyendo integración con Stripe) y las páginas de seguimiento
+y confirmación de pedidos. Las funciones devuelven respuestas HTTP y están
+diseñadas para usarse con las plantillas en `templates/pedidos/`.
+"""
+
 import stripe
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -274,6 +282,22 @@ def crear_sesion_stripe(request):
         messages.error(request, f"Error al iniciar el pago con Stripe: {e}. Inténtalo de nuevo.")
         return redirect('pedidos:checkout')
 
+
+# FUNCIÓN AUXILIAR: El trabajo pesado del envío de correo
+def send_confirmation_email_async(asunto, html_content, email_cliente):
+    """Encapsula la lógica de envío de correo para ser ejecutada en un hilo."""
+    from django.core.mail import send_mail
+    from django.conf import settings
+    
+    # El proceso de conexión y envío ocurre aquí, fuera del hilo HTTP principal
+    send_mail(
+        asunto,
+        '', 
+        settings.DEFAULT_FROM_EMAIL,
+        [email_cliente],
+        html_message=html_content,
+        fail_silently=False
+    )
 @transaction.atomic
 def pago_exitoso(request):
     """

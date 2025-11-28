@@ -1,3 +1,9 @@
+"""Rutas para la app `pedidos`.
+
+Incluye el carrito, checkout, webhooks y vistas de seguimiento/confirmación
+de pedidos.
+"""
+
 from django.urls import path
 from . import views
 

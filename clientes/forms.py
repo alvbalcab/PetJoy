@@ -1,3 +1,9 @@
+"""Formularios para gestión de clientes: registro, login y perfil.
+
+Incluye `RegistroForm` (extiende `UserCreationForm`) para crear clientes,
+`LoginForm` para el acceso y `PerfilForm` para editar datos del cliente.
+"""
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import Cliente

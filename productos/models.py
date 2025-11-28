@@ -1,3 +1,11 @@
+"""Modelos relacionados con productos, categorías, marcas e imágenes.
+
+Este módulo define los modelos principales usados para representar el
+catálogo: `Categoria`, `Marca`, `Producto`, `ImagenProducto` y
+`TallaProducto`. Cada clase incluye métodos utilitarios para obtener el
+precio actual, la URL de la imagen y el cálculo de descuentos.
+"""
+
 import re
 
 from django.db import models

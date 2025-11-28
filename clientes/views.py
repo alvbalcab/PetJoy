@@ -1,3 +1,9 @@
+"""Vistas para registro, autenticación y perfil de clientes.
+
+Contiene las vistas públicas para registrar nuevos clientes, iniciar/salir
+de sesión y editar el perfil del usuario autenticado.
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required

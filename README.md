@@ -1,6 +1,6 @@
 # INSTRUCCIONES DE INSTALACIÓN Y PUESTA EN PRODUCCIÓN
 
-## 1.🚀 Configruación del Entorno (Requisitos Previos)
+## 1.🚀 Configuración del Entorno (Requisitos Previos)
 Esta sección informa qué necesita el usuario antes de empezar.
 - Tener Python 3.12 instalado. **https://www.python.org/downloads/**
 - Sistema de Control de Versiones como Git.

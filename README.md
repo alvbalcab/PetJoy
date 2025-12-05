@@ -19,17 +19,16 @@ Esta sección informa qué necesita el usuario antes de empezar.
 | **Instalar Dependencias** | Instalar librerías necesarias: `requirements.txt`  | `python -m pip install -r requirements.txt` |
 
 
-
-📝 Nota: Si no tienes un archivo requirements.txt, es muy recomendable generarlo con el comando `pip freeze > requirements.txt` mientras tu entorno virtual está activo. Esto documenta todas las librerías necesarias de forma automática, en lugar de solo mencionar Django.
-
-
 ## 3.💾 Configuración de la Base de Datos
-Este comando **crea la base de datos** para que el proyecto pueda usarse: `python manage.py migrate`
+Esta sección prepara la base de datos para su uso inicial:
+* Crear tablas de la base de datos: `python manage.py migrate`
+* Cargar datos iniciales (solo es necesario ejecutarlo una vez para cargar todos los productos): `python personalizar_petjoy.py `
 
 
 ## 4.▶️ Ejecutar la aplicación (Puesta en Desarrollo)
 Instrucciones para  que el usuario pueda ver el proyecto funcionando localmente.
 * Ejecutar el Servidor de Desarrollo (dentro del entorno virtual de python **.venv**): `python manage.py runserver`
+* Ejecutar el Servidor de Desarrollo (dentro del entorno virtual de python **.venv**): `python personalizar_petjoy.py`
 * Acceso: URL por defecto **(http://127.0.0.1:8000/)**
 
 
